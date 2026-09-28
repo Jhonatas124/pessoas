@@ -952,6 +952,122 @@ body{overscroll-behavior-y:none; -webkit-tap-highlight-color:transparent}
 @media (max-width:760px) and (hover:none){
   .card:hover,.bloco:hover,.painel:hover{border-color:var(--line)}
 }
+
+/* ==================================================================
+   v1.1 (28-09-2026) — feito pro celular (08-celular.js): quadradinhos de aniversário,
+   lista enxuta, ficha compacta, cadastro expresso e a fila "Completar depois"
+   ================================================================== */
+.tag.rev{background:rgba(123,140,255,.13); color:#a9b4ff; border-color:rgba(123,140,255,.3)}
+.tabbar a .bd.azul{background:var(--acc); color:#fff}
+.cel-cab{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; margin:2px 0 12px}
+.cel-cab h1{margin:0; font-size:26px; letter-spacing:-.02em}
+.cel-data{color:var(--mut); font-size:13px; margin-bottom:2px}
+.cel-data::first-letter{text-transform:uppercase}
+.cel-chips{display:flex; gap:6px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; margin:0 0 14px}
+.cel-chips::-webkit-scrollbar{display:none}
+.cel-chips button{flex:none; padding:8px 13px; border-radius:99px; border:1px solid var(--line2); background:var(--surf); color:var(--ink2); font-size:13px; white-space:nowrap; font-family:inherit}
+.cel-chips button.on{background:var(--acc); border-color:transparent; color:#fff; font-weight:600}
+.cel-chips button b{margin-left:4px; padding:1px 7px; border-radius:99px; background:rgba(255,255,255,.18); font-size:11px}
+.cel-sec{margin:0 0 18px}
+.cel-sec h3{display:flex; align-items:center; gap:8px; margin:0 0 9px; font-size:15px; font-weight:650}
+.cel-sec h3 .n,.fi-det summary .n{font-size:12px; font-weight:600; color:var(--mut); background:var(--surf2); border:1px solid var(--line); border-radius:99px; padding:1px 8px}
+.cel-zap{display:flex; gap:6px; flex-wrap:wrap; margin:0 0 10px}
+.cel-mais{width:100%; justify-content:center; margin:4px 0 8px}
+/* aniversários: quadradinhos, 3 por linha */
+.grade-ta{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px}
+.ta{display:flex; flex-direction:column; align-items:center; text-align:center; gap:1px; padding:10px 5px 9px; border-radius:16px;
+  background:var(--surf); border:1px solid var(--line); color:var(--ink); text-decoration:none; min-width:0}
+.ta:hover{text-decoration:none}
+.ta.breve{border-color:rgba(251,191,36,.26); background:rgba(251,191,36,.045)}
+.ta.hoje{border-color:rgba(251,191,36,.6); background:rgba(251,191,36,.12)}
+.ta-f{position:relative; margin-bottom:6px}
+.ta-img{width:56px; height:56px; border-radius:50%; object-fit:cover; display:block}
+.ta-img.none{display:grid; place-items:center; background:var(--surf2); font-size:24px; color:var(--mut2)}
+.ta-marco{position:absolute; right:-4px; bottom:-2px; width:20px; height:20px; border-radius:50%; background:var(--warn); color:#111; font-size:11px; display:grid; place-items:center; border:2px solid var(--bg)}
+.ta-n{font-size:12.5px; font-weight:650; line-height:1.16; width:100%; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; min-height:29px; color:var(--ink)}
+.ta-i{font-size:12px; color:var(--ink2)}
+.ta-i b{color:#fff; font-size:14px}
+.ta-d{font-size:11px; color:var(--mut)}
+.ta-q{margin-top:4px; font-size:10.5px; font-weight:650; padding:2px 8px; border-radius:99px; background:var(--surf2); color:var(--ink2)}
+.ta.breve .ta-q{background:rgba(251,191,36,.16); color:#fcd34d}
+.ta.hoje .ta-q{background:var(--warn); color:#111}
+/* listas enxutas (Pessoas, fila, Conferência) */
+.lista-cel{display:grid; border:1px solid var(--line); border-radius:var(--r2); overflow:hidden; background:var(--surf)}
+.lp{display:flex; align-items:center; gap:11px; padding:9px 11px; color:var(--ink); text-decoration:none; border-top:1px solid var(--line); min-width:0}
+.lp:first-child{border-top:none}
+a.lp:hover{text-decoration:none; background:var(--surf2)}
+.lp-img{width:42px; height:42px; border-radius:50%; object-fit:cover; flex:none; display:block}
+.lp-img.none{display:grid; place-items:center; background:var(--surf2); font-size:17px; color:var(--mut2)}
+.lp-t{flex:1; min-width:0; color:var(--ink); text-decoration:none}
+.lp-t b{display:block; font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.lp-t small{display:block; font-size:12px; color:var(--mut); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.lp-d{display:flex; align-items:center; gap:6px; flex:none}
+.circ-dot{width:9px; height:9px; border-radius:50%; background:#5d6279}
+.circ-dot.c1{background:#f5c65e} .circ-dot.c2{background:#8194ff} .circ-dot.c3{background:#82e8ae}
+.dot{font-size:12px}
+.dot.esq{width:18px; height:18px; border-radius:50%; display:grid; place-items:center; background:rgba(251,191,36,.15); color:#fcd34d; font-weight:700; font-size:11px}
+.cel-ord{max-width:48%; padding:8px 10px; border-radius:10px; border:1px solid var(--line2); background:var(--surf); color:var(--ink); font-size:13px}
+/* ficha */
+.fi-top{display:flex; gap:14px; align-items:center; margin:2px 0 12px}
+.fi-img{width:86px; height:86px; border-radius:22px; object-fit:cover; flex:none; display:block}
+.fi-img.none{display:grid; place-items:center; background:var(--surf2); font-size:34px; color:var(--mut2)}
+.fi-q{min-width:0}
+.fi-q h1{margin:0 0 6px; font-size:21px; line-height:1.2; letter-spacing:-.01em}
+.fi-l{display:flex; flex-wrap:wrap; gap:5px; margin-bottom:5px}
+.fi-r{font-size:12.5px; color:var(--mut); margin-bottom:4px}
+.fi-fila{margin:0 0 12px; padding:10px 12px; border-radius:12px; font-size:13px; background:rgba(123,140,255,.1); border:1px solid rgba(123,140,255,.3); color:#c7cfff}
+.fi-fila.esq{background:rgba(251,191,36,.08); border-color:rgba(251,191,36,.28); color:#fde68a}
+.fi-ac{display:flex; gap:8px; margin:0 0 14px}
+.fi-ac .btn{flex:1; justify-content:center; padding:11px 8px}
+.fi-dd{display:grid; grid-template-columns:1fr 1fr; gap:1px; border:1px solid var(--line); border-radius:var(--r2); overflow:hidden; background:var(--line); margin:0 0 14px}
+.fi-dd:empty{display:none}
+.dd-i{background:var(--bg2); padding:9px 12px; min-width:0}
+.dd-i:last-child:nth-child(odd){grid-column:1/-1}
+.dd-i small{display:block; font-size:11px; color:var(--mut); margin-bottom:2px}
+.dd-i span{display:block; font-size:13.5px; overflow-wrap:anywhere}
+.fi-fam{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px 6px; margin-bottom:10px}
+.mp{display:flex; flex-direction:column; align-items:center; text-align:center; color:var(--ink); text-decoration:none; min-width:0}
+.mp:hover{text-decoration:none}
+.mp-img{width:52px; height:52px; border-radius:50%; object-fit:cover; display:block; margin-bottom:4px}
+.mp-img.none{display:grid; place-items:center; background:var(--surf2); font-size:20px; color:var(--mut2)}
+.mp b{font-size:12px; font-weight:600; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mp small{font-size:10.5px; color:var(--mut)}
+.cel-chips.add{margin-bottom:0; flex-wrap:wrap}
+.cel-chips.add button{font-size:12.5px; padding:7px 12px}
+.fi-det{border:1px solid var(--line); border-radius:var(--r2); background:var(--surf); margin:0 0 10px; padding:0 12px}
+.fi-det summary{cursor:pointer; list-style:none; padding:13px 0; font-weight:600; display:flex; align-items:center; gap:8px}
+.fi-det summary::-webkit-details-marker{display:none}
+.fi-det summary::after{content:'›'; margin-left:auto; color:var(--mut); font-size:18px; transition:transform .2s}
+.fi-det[open] summary::after{transform:rotate(90deg)}
+.fi-det[open]{padding-bottom:12px}
+/* cadastro expresso */
+.xp-topo{display:flex; align-items:center; gap:10px; margin:0 0 10px}
+.xp-tog{display:inline-flex; align-items:center; gap:9px; cursor:pointer; user-select:none; -webkit-user-select:none}
+.xp-tog input{position:absolute; opacity:0; pointer-events:none}
+.xp-tog .sw{width:46px; height:28px; border-radius:99px; background:var(--surf3); border:1px solid var(--line2); position:relative; transition:background .2s; flex:none}
+.xp-tog .sw::after{content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .2s}
+.xp-tog input:checked + .sw{background:var(--ok); border-color:transparent}
+.xp-tog input:checked + .sw::after{transform:translateX(18px)}
+.xp{display:grid; gap:14px; margin:6px 0 18px}
+.xp .campo input{font-size:17px; padding:13px 14px}
+.xp .campo input.erro,#in_nasc.erro{border-color:var(--red)}
+.xp-foto{display:flex; align-items:center; gap:12px; cursor:pointer; padding:10px 12px; border:1px dashed var(--line3); border-radius:var(--r3); color:var(--ink2)}
+.xp-prev{width:54px; height:54px; border-radius:50%; display:grid; place-items:center; background:var(--surf2); font-size:22px; overflow:hidden; flex:none}
+.xp-prev img{width:100%; height:100%; object-fit:cover}
+.xp-chk{display:flex; gap:12px; align-items:flex-start; padding:12px; border-radius:var(--r3); background:rgba(123,140,255,.08); border:1px solid rgba(123,140,255,.25); cursor:pointer}
+.xp-chk input{width:22px; height:22px; margin:1px 0 0; accent-color:var(--acc); flex:none}
+.xp-chk b{display:block; font-size:14px}
+.xp-chk small{display:block; color:var(--mut); font-size:12px; margin-top:2px}
+@media (max-width:760px){
+  .fita{display:none!important}
+  main{padding-top:12px}
+  .cel-chips{margin:0 -14px 14px; padding:0 14px}
+  .cel-chips.add{margin:0; padding:0}
+}
+@media (min-width:761px){
+  .grade-ta{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+  .fi-fam{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+}
 </style>
 </head>
 <body>
@@ -2501,7 +2617,7 @@ $('#modal').addEventListener('mousedown',e=>{if(e.target===$('#modal'))fecharFor
 // os dados guardados no próprio aparelho: a BASE (gerada no Mac pelo gerar_pacote.py, com tudo
 // já calculado) + as MUDANÇAS feitas no celular, que ficam na fila até o Mac aplicar.
 const APP_ID = 'pessoas-de-bolso';
-const APP_VERSION = '1.0';
+const APP_VERSION = '1.1';
 const PREVIEW = !!window.PREVIEW_MODE;
 let ID_EU = '';
 const CAMPOS = ['id', 'nome', 'cpf', 'data_nascimento', 'sexo', 'pai_id', 'pai_nome', 'mae_id', 'mae_nome',
@@ -2697,7 +2813,7 @@ function descreverMudanca(m) {
   const p = PESSOAS[idAtual(m.id)], nome = (p && p.nome) || (m.campos && m.campos.nome) || m.id;
   if (m.tipo === 'foto') return { t: `Foto nova de ${nome}`, s: 'foto' };
   if (m.novo) return { t: `Pessoa nova: ${nome}`, s: 'cadastro' };
-  const ROT = { nome: 'nome', data_nascimento: 'nascimento', sexo: 'sexo', pai_id: 'pai', mae_id: 'mãe', apelido: 'apelido', telefone: 'telefone', email: 'e-mail', links: 'links', oficio: 'ofício', observacoes: 'observações', fonte: 'fonte', fonte_detalhe: 'procedência', esqueleto: 'esqueleto', falecido: 'falecido', endereco: 'endereço', local: 'pino no mapa', cpf: 'CPF' };
+  const ROT = { nome: 'nome', data_nascimento: 'nascimento', sexo: 'sexo', pai_id: 'pai', mae_id: 'mãe', apelido: 'apelido', telefone: 'telefone', email: 'e-mail', links: 'links', oficio: 'ofício', observacoes: 'observações', fonte: 'fonte', fonte_detalhe: 'procedência', esqueleto: 'esqueleto', falecido: 'falecido', endereco: 'endereço', local: 'pino no mapa', cpf: 'CPF', revisar: 'completar depois' };
   const ks = Object.keys(m.campos || {}).filter(k => ROT[k]).map(k => ROT[k]);
   if (m.novo_pai) ks.push('pai novo'); if (m.novo_mae) ks.push('mãe nova'); if (m.ligar_a) ks.push('ligou como ' + (m.ligar_a.lado === 'pai' ? 'pai' : 'mãe'));
   return { t: `${nome}`, s: [...new Set(ks)].join(', ') || 'edição' };
@@ -3298,7 +3414,7 @@ function atualizarTela() {
 
 function vBoasVindas() {
   app.innerHTML = `<div class="boas"><div class="sig">🗂️</div><h1>Pessoas de Bolso</h1>
-    <p>O seu banco de pessoas no celular: aniversários, fichas, árvore de cada um, mapa e descobertas. Os dados vêm do banco do Mac e ficam trancados no seu cofre.</p>
+    <p>O seu banco de pessoas no celular: aniversários, fichas e a árvore de cada um. Os dados vêm do banco do Mac e ficam trancados no seu cofre.</p>
     ${Vault.cfg ? `<p class="mut">Cofre ligado (<span data-vault-status>${esc(Vault.statusText())}</span>). A base chega sozinha quando o Claude mandar pela caixa de entrada.</p>
       <div class="linha aj" style="max-width:none"><button class="btn p" onclick="Vault.sync()">Procurar agora</button><button class="btn" onclick="$('#arq-importar').click()">Abrir arquivo do Claude</button></div>`
     : `<div class="aj" style="max-width:none;margin-top:18px"><div class="card" style="text-align:left"><h3>1. Ligue o cofre</h3><p>Repositório privado + chave do GitHub + uma senha sua. É por ele que a base do Mac chega e que o que você muda aqui volta pro Mac.</p>
@@ -3387,6 +3503,311 @@ function ligarPinca(el) {
   const fim = e => { pts.delete(e.pointerId); if (pts.size < 2) { ini = null; MAPA.pinca = false; } if (!pts.size) setTimeout(() => { MAPA.pincou = false; }, 60); };
   el.addEventListener('pointerup', fim); el.addEventListener('pointercancel', fim);
 }
+
+// ================================================================ Pessoas de Bolso — feito pro CELULAR (v1.1, 28-09-2026)
+// Pedido dele (28-09-2026): "vou ver majoritariamente pelo celular". Então, na tela estreita:
+//   • Aniversários em QUADRADINHOS, 3 por linha: foto, nome, idade que vai fazer, data e em quantos dias;
+//   • cadastro EXPRESSO ligado por padrão (chave do lado esquerdo): só nome, nascimento e foto, e a opção
+//     "📝 completar depois" — a pessoa entra normal (não vira esqueleto) e cai na fila "Completar";
+//   • sem Descobertas e sem Mapa (não interessam a ele); Pessoas, ficha e Conferência enxutas.
+// Este arquivo só SOBRESCREVE telas do painel do Mac (que o montar_app.py copia). Na tela larga (Mac) o painel
+// continua como era, menos Descobertas/Mapa e mais a fila "Completar depois".
+const CEL_MAX = 900;
+const celular = () => window.innerWidth <= CEL_MAX;
+
+// ---------- campo novo: revisar = "completar depois" (existe também no banco do Mac: banco.py CAMPOS/BOOLS)
+if (!CAMPOS.includes('revisar')) CAMPOS.push('revisar');
+BOOLS.add('revisar');
+ORDENS.aniv = ['Próximo aniversário', (a, b) => (a.dias ?? 999) - (b.dias ?? 999) || norm(a.nome).localeCompare(norm(b.nome))];
+const filaLista = () => Object.values(PESSOAS).filter(p => p.revisar).sort((a, b) => norm(a.nome).localeCompare(norm(b.nome)));
+
+// ---------- menu (Mac) e abas (celular): sem Descobertas/Mapa, com "Completar"
+(function () {
+  const vg = MENU.find(g => g[0] === 'Visão geral');
+  if (vg) vg[1] = vg[1].filter(i => i[3] === 'aniv');
+  const pg = MENU.find(g => g[0] === 'Pessoas');
+  if (pg && !pg[1].some(i => i[3] === 'fila')) pg[1].splice(1, 0, ['#/fila', '📝', 'Completar depois', 'fila', 'bd_fila']);
+  TITULOS.fila = ['Pessoas', 'Completar depois'];
+  const bt = document.querySelector('.topo-barra .icone[title="Descobertas"]'); if (bt) bt.remove();
+})();
+const ABAS_CEL = [['#/', '🎂', 'Aniversários', 'aniv'], ['#/pessoas', '👥', 'Pessoas', 'pessoas'], ['#/fila', '📝', 'Completar', 'fila'], ['#/ajustes', '⚙️', 'Ajustes', 'ajustes']];
+function desenharAbas() {
+  const at = vAtual(), n = S ? S.mudancas.length : 0, erro = Vault.cfg && Vault.cfg.error, nf = filaLista().length;
+  $('#tabbar').innerHTML = ABAS_CEL.map(([href, ic, rot, k]) => {
+    const on = at === k || (k === 'pessoas' && (at === 'esq' || at === 'pessoa' || at === 'pend'));
+    const bd = k === 'ajustes' && (erro || n) ? `<span class="bd">${erro ? '!' : n > 99 ? '99+' : n}</span>`
+      : k === 'fila' && nf ? `<span class="bd azul">${nf > 99 ? '99+' : nf}</span>` : '';
+    return `<a href="${href}" class="${on ? 'on' : ''}"><i>${ic}</i><span>${rot}</span>${bd}</a>`;
+  }).join('');
+  const b = document.getElementById('bd_mud'); if (b) b.textContent = erro ? '!' : n;
+  const eu = BASE && BASE.pessoas && BASE.pessoas[ID_EU]; $('#eu').textContent = eu ? eu.nome.trim().charAt(0).toUpperCase() : '·';
+}
+vAtual = (orig => function () { const h = location.hash || '#/'; if (h.startsWith('#/fila')) return 'fila'; return orig(); })(vAtual);
+desenharMenu = (orig => function () { orig(); const e = document.getElementById('bd_fila'); if (e) e.textContent = filaLista().length; })(desenharMenu);
+desenhar = (orig => async function () {
+  const h = location.hash || '#/';
+  if (h.startsWith('#/mapa') || h.startsWith('#/descobertas')) { location.replace('#/'); return; }   // tirados a pedido dele
+  if (h.startsWith('#/fila')) { desenharMenu(); desenharFita(); desenharAbas(); return BASE ? vFila() : vBoasVindas(); }
+  return orig();
+})(desenhar);
+tags = (orig => function (p) { return (p.revisar ? '<span class="tag rev">📝 completar depois</span> ' : '') + orig(p); })(tags);
+
+// ---------- nomes curtos: "Maria de Lourdes Silva" → "Maria de Lourdes"; apelido entre parênteses fica de fora
+const PARTIC = new Set(['DE', 'DA', 'DO', 'DAS', 'DOS', 'E']);
+function nomeCurto2(p) {
+  const w = String(p.nome || '').replace(/\([^)]*\)/g, ' ').trim().split(/\s+/).filter(Boolean);
+  if (w.length <= 2) return w.join(' ');
+  return PARTIC.has(norm(w[1])) ? w.slice(0, 3).join(' ') : w.slice(0, 2).join(' ');
+}
+const quandoTxt = d => d === 0 ? 'hoje' : d === 1 ? 'amanhã' : `em ${d} dias`;
+
+// ================================================================ ANIVERSÁRIOS (celular)
+let ANIV_JANELA = 30;
+function tileAniv(p) {
+  const n = fazAnos(p), dt = dataAniv(p), marco = MARCOS.has(n);
+  return `<a class="ta ${p.dias === 0 ? 'hoje' : p.dias <= 7 ? 'breve' : ''}" href="#/p/${esc(p.id)}">
+    <div class="ta-f">${foto(p, 'ta-img')}${marco ? '<span class="ta-marco" title="idade redonda">★</span>' : ''}</div>
+    <div class="ta-n">${esc(nomeCurto2(p))}</div>
+    <div class="ta-i">faz <b>${n}</b></div>
+    <div class="ta-d">${esc(p.data_nascimento.slice(0, 5))} · ${SEM[dt.getDay()]}</div>
+    <div class="ta-q">${quandoTxt(p.dias)}</div></a>`;
+}
+function grade(l) { return `<div class="grade-ta">${l.map(tileAniv).join('')}</div>`; }
+function vAnivCel() {
+  const vivos = Object.values(PESSOAS).filter(p => p.dias !== null && !p.falecido && (p.circ ?? 0) >= ANIV_MIN)
+    .sort((a, b) => a.dias - b.dias || norm(a.nome).localeCompare(norm(b.nome)));
+  const hoje = vivos.filter(p => p.dias === 0), sem = vivos.filter(p => p.dias >= 1 && p.dias <= 7),
+    mes = vivos.filter(p => p.dias >= 8 && p.dias <= 30), depois = vivos.filter(p => p.dias >= 31 && p.dias <= ANIV_JANELA);
+  const sec = (t, l, extra) => l.length ? `<div class="cel-sec"><h3>${t} <span class="n">${l.length}</span></h3>${extra || ''}${grade(l)}</div>` : '';
+  const zap = hoje.filter(p => wa(p)).map(p => `<a class="btn w s" href="${wa(p)}" target="_blank" rel="noopener">💬 ${esc(nomeCurto2(p).split(' ')[0])}</a>`).join('');
+  app.innerHTML = `<div class="cel-cab"><div><div class="cel-data">${HOJE.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}</div>
+      <h1>Aniversários</h1></div></div>
+    <div class="cel-chips">${[...CIRC].sort((a, b) => b[0] - a[0]).map(([n, r]) => `<button class="${ANIV_MIN === n ? 'on' : ''}" onclick="selCircSeg(${n})">${r}</button>`).join('')}</div>
+    ${sec('🎉 Hoje', hoje, zap ? `<div class="cel-zap">${zap}</div>` : '')}
+    ${sec('Próximos 7 dias', sem)}
+    ${sec('Até 30 dias', mes)}
+    ${sec('Até ' + ANIV_JANELA + ' dias', depois)}
+    ${!hoje.length && !sem.length && !mes.length && !depois.length ? '<div class="vazio">ninguém com data neste círculo</div>' : ''}
+    ${ANIV_JANELA < 365 ? `<button class="btn cel-mais" onclick="ANIV_JANELA=${ANIV_JANELA < 90 ? 90 : 365};render()">Ver até ${ANIV_JANELA < 90 ? '90 dias' : 'o ano todo'}</button>` : ''}`;
+}
+vAniv = (orig => function () { return celular() ? vAnivCel() : orig(); })(vAniv);
+
+// ================================================================ PESSOAS (celular)
+let CEL_LIM = 60;
+function linhaPessoa(p) {
+  const sub = [p.data_nascimento ? `${p.idade !== null ? p.idade + ' anos · ' : ''}${esc(p.data_nascimento.slice(0, 5))}` : 'sem data',
+    p.apelido ? esc(p.apelido) : '', p.oficio ? esc(p.oficio) : ''].filter(Boolean).join(' · ');
+  return `<a class="lp" href="#/p/${esc(p.id)}">${foto(p, 'lp-img')}
+    <div class="lp-t"><b>${esc(p.nome)}</b><small>${sub}</small></div>
+    <div class="lp-d">${p.revisar ? '<span class="dot rev" title="completar depois">📝</span>' : ''}${p.esqueleto ? '<span class="dot esq" title="esqueleto">?</span>' : ''}<i class="circ-dot c${p.circ ?? 0}"></i></div></a>`;
+}
+function vPessoasCel() {
+  const q = norm($('#busca').value), qd = q.replace(/\D/g, '');
+  const FL = { todas: 'Todas', fila: '📝 Completar', esq: 'Esqueletos', semdata: 'Sem data', semfoto: 'Sem foto', comp: 'Completas' };
+  const l = Object.values(PESSOAS).filter(p => {
+    if (FILTRO === 'fila' && !p.revisar) return false;
+    if (FILTRO === 'esq' && !p.esqueleto) return false;
+    if (FILTRO === 'comp' && p.esqueleto) return false;
+    if (FILTRO === 'semdata' && p.data_nascimento) return false;
+    if (FILTRO === 'semfoto' && p.foto) return false;
+    if (!q) return true;
+    return norm(p.nome).includes(q) || norm(p.apelido || '').includes(q) || norm(p.oficio || '').includes(q)
+      || (qd && qd.length >= 3 && ((p.telefone || '').replace(/\D/g, '').includes(qd) || p.id.includes(qd)));
+  }).sort((ORDENS[ORDEM] || ORDENS.nome)[1]);
+  const nf = filaLista().length;
+  app.innerHTML = `<div class="cel-cab"><div><h1>Pessoas</h1><div class="cel-data">${l.length} ${l.length === 1 ? 'ficha' : 'fichas'}${q ? ` com “${esc($('#busca').value)}” <a href="javascript:void 0" onclick="$('#busca').value='';render()">limpar</a>` : ''}</div></div>
+      <select class="cel-ord" onchange="setOrdem(this.value)">${Object.entries(ORDENS).map(([k, v]) => `<option value="${k}" ${ORDEM === k ? 'selected' : ''}>${v[0]}</option>`).join('')}</select></div>
+    <div class="cel-chips">${Object.entries(FL).map(([k, r]) => `<button class="${FILTRO === k ? 'on' : ''}" onclick="CEL_LIM=60;setFiltro('${k}')">${r}${k === 'fila' && nf ? ` <b>${nf}</b>` : ''}</button>`).join('')}</div>
+    <div class="lista-cel">${l.slice(0, CEL_LIM).map(linhaPessoa).join('') || '<div class="vazio">nenhuma ficha com esse filtro</div>'}</div>
+    ${l.length > CEL_LIM ? `<button class="btn cel-mais" onclick="CEL_LIM+=120;render()">Mostrar mais ${Math.min(120, l.length - CEL_LIM)} (de ${l.length - CEL_LIM})</button>` : ''}`;
+}
+vPessoas = (orig => function () { return celular() ? vPessoasCel() : orig(); })(vPessoas);
+
+// ================================================================ FILA "Completar depois"
+function faltaEm(p) {
+  const f = [];
+  if (!p.data_nascimento) f.push('nascimento'); if (!p.pai_id && !p.pai_nome) f.push('pai'); if (!p.mae_id && !p.mae_nome) f.push('mãe');
+  if (!p.telefone) f.push('telefone'); if (!p.foto) f.push('foto'); if (!p.sexo) f.push('sexo');
+  return f;
+}
+function vFila() {
+  const l = filaLista();
+  app.innerHTML = `<div class="cel-cab"><div><h1>Completar depois</h1>
+      <div class="cel-data">${l.length ? `${l.length} ${l.length === 1 ? 'cadastro' : 'cadastros'} esperando você buscar mais dados` : 'nada na fila'}</div></div></div>
+    <p class="mut small" style="margin:0 0 12px">Entram aqui os cadastros com <b>📝 completar depois</b> marcado. Eles já valem como pessoa normal
+      (aniversário, árvore, busca). Quando terminar, abra <b>Completar</b> e desmarque a opção.</p>
+    <div class="lista-cel">${l.map(p => { const f = faltaEm(p);
+      return `<div class="lp">${foto(p, 'lp-img')}
+        <a class="lp-t" href="#/p/${esc(p.id)}"><b>${esc(p.nome)}</b><small>${f.length ? 'falta: ' + f.join(', ') : 'tudo preenchido — pode tirar da fila'}</small></a>
+        <button class="btn s p" onclick="abrirForm('${esc(p.id)}')">Completar</button></div>`; }).join('')
+      || '<div class="vazio">Nenhum cadastro na fila. No ＋, marque “📝 completar depois” quando for cadastrar com pressa.</div>'}</div>`;
+}
+
+// ================================================================ FICHA (celular)
+function miniPessoa(id, rot) {
+  const q = PESSOAS[id]; if (!q) return '';
+  return `<a class="mp" href="#/p/${esc(id)}">${foto(q, 'mp-img')}<b>${esc(nomeCurto2(q).split(' ')[0])}</b><small>${esc(rot)}</small></a>`;
+}
+async function vPessoaCel(id) {
+  const p = PESSOAS[id]; if (!p) { app.innerHTML = '<div class="vazio">Pessoa não encontrada.</div>'; return; }
+  app.innerHTML = '<div class="mut">carregando…</div>';
+  const F = await (await fetch('/api/dossie/' + encodeURIComponent(id))).json();
+  const R = F.parentes || {};
+  const w = wa(p), tel = String(p.telefone || '').replace(/[^\d+]/g, '');
+  const idade = p.idade !== null && p.idade !== undefined ? (p.falecido ? `faria ${p.idade}` : `${p.idade} anos`) : '';
+  const niver = p.dias !== null && p.dias !== undefined && !p.falecido ? `faz ${fazAnos(p)} ${quandoTxt(p.dias)}` : '';
+  const fam = [];
+  const add = (ids, fn) => (ids || []).forEach(i => { const q = PESSOAS[i]; if (q) fam.push(miniPessoa(i, fn(q))); });
+  add([R.pai], () => 'pai'); add([R.mae], () => 'mãe');
+  add(R.irmaos, q => fem(q) ? 'irmã' : 'irmão'); add(R.meios_irmaos, q => fem(q) ? 'meia-irmã' : 'meio-irmão');
+  add(R.filhos, q => fem(q) ? 'filha' : 'filho'); add(R.netos, q => fem(q) ? 'neta' : 'neto');
+  add([...(R.avos_paternos || []), ...(R.avos_maternos || [])], q => fem(q) ? 'avó' : 'avô');
+  const dado = (k, v) => v ? `<div class="dd-i"><small>${k}</small><span>${v}</span></div>` : '';
+  const pai = !p.pai_id && p.pai_nome ? esc(p.pai_nome) + ' <span class="mut">(sem ficha)</span>' : '';
+  const mae = !p.mae_id && p.mae_nome ? esc(p.mae_nome) + ' <span class="mut">(sem ficha)</span>' : '';
+  const fatos = blocoFatos(F, p), cruz = blocoCruzado(F, p);
+  // links: só as redes (WhatsApp, telefone e e-mail já estão nos botões e nos dados)
+  const LK = (p.links || []).filter(x => !/WhatsApp|E-mail/.test(x.rede)).length ? `<div class="links">${p.links.filter(x => !/WhatsApp|E-mail/.test(x.rede)).map(x =>
+    `<a class="lk" href="${esc(x.url)}" target="_blank" rel="noopener"><span class="ic">${x.icone}</span>${esc(x.rede)}<span class="qual">${esc(x.perfil)}</span></a>`).join('')}</div>` : '';
+  const tg = (p.revisar ? '<span class="tag rev">📝 completar depois</span> ' : '') + (p.esqueleto ? '<span class="tag esq">esqueleto</span> ' : '') + (p.falecido ? '<span class="tag fal">falecido</span>' : '');
+  app.innerHTML = `<div class="fi-top">${p.google_fotos ? `<a href="${esc(p.google_fotos)}" target="_blank" rel="noopener">${foto(p, 'fi-img')}</a>` : foto(p, 'fi-img')}
+      <div class="fi-q"><h1>${esc(p.nome)}</h1>
+        <div class="fi-l">${idade ? `<span class="pill cinza">${idade}</span>` : ''}${niver ? `<span class="pill ${p.dias <= 7 ? 'amar' : 'cinza'}">🎂 ${niver}</span>` : ''}${pillCirc(p)}</div>
+        <div class="fi-r">${esc(relTxt(p))}</div>${tg}</div></div>
+    ${p.revisar ? `<div class="fi-fila">📝 Na fila pra completar${faltaEm(p).length ? ' — falta ' + faltaEm(p).join(', ') : ''}. <a href="javascript:void 0" onclick="abrirForm('${esc(p.id)}')">Completar</a></div>` : ''}
+    ${p.esqueleto ? '<div class="fi-fila esq">Ficha esqueleto: só existe porque alguém citou como pai/mãe. Toque em Editar pra completar.</div>' : ''}
+    <div class="fi-ac">${w ? `<a class="btn w" href="${w}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}${tel ? `<a class="btn" href="tel:${esc(tel)}">📞 Ligar</a>` : ''}
+      <button class="btn p" onclick="abrirForm('${esc(p.id)}')">✏️ Editar</button></div>
+    <div class="fi-dd">${dado('Nascimento', esc(p.data_nascimento || ''))}${dado('Apelido', esc(p.apelido || ''))}${dado('Telefone', esc(p.telefone || ''))}
+      ${dado('Ofício', esc(p.oficio || ''))}${dado('E-mail', p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '')}${dado('Sexo', esc(p.sexo || ''))}
+      ${dado('Endereço', esc(p.endereco || ''))}${dado('CPF', esc(p.cpf || ''))}${dado('Pai', pai)}${dado('Mãe', mae)}</div>
+    ${LK}
+    ${p.observacoes ? `<div class="obs">${esc(p.observacoes).replace(/\n/g, '<br>')}</div>` : ''}
+    <div class="cel-sec"><h3>Família <span class="n">${fam.length}</span></h3>
+      ${fam.length ? `<div class="fi-fam">${fam.join('')}</div>` : '<div class="mut small">ninguém ligado ainda</div>'}
+      <div class="cel-chips add">${`<button onclick="abrirForm(null,{filhoDe:'${esc(p.id)}'})">＋ filho(a)</button>`}
+        ${(p.pai_id || p.mae_id) ? `<button onclick="abrirForm(null,{irmaoDe:'${esc(p.id)}'})">＋ irmão(ã)</button>` : ''}
+        ${!p.pai_id ? `<button onclick="abrirForm(null,{paiDe:'${esc(p.id)}',lado:'pai'})">＋ pai</button>` : ''}
+        ${!p.mae_id ? `<button onclick="abrirForm(null,{paiDe:'${esc(p.id)}',lado:'mae'})">＋ mãe</button>` : ''}</div></div>
+    <details class="fi-det" id="det-arv"><summary>🌳 Árvore genealógica</summary>
+      <label class="chk" style="margin:8px 0"><input type="checkbox" id="lat" onchange="desenharArvore()"> mostrar tios, primos, sobrinhos</label>
+      <div class="arv" id="arv"></div></details>
+    ${fatos ? `<details class="fi-det"><summary>◆ Calculado</summary>${fatos.replace(/<h2>[\s\S]*?<\/h2>/, '')}</details>` : ''}
+    ${cruz ? `<details class="fi-det"><summary>🔍 Cruzamentos</summary>${cruz.replace(/<h2>[\s\S]*?<\/h2>/, '')}</details>` : ''}
+    <div class="mut small" style="margin-top:14px;text-align:center">ficha ${esc(p.id)}</div>`;
+  app._R = R; app._p = p; app._F = F;
+  const det = $('#det-arv'); det.addEventListener('toggle', () => { if (det.open) desenharArvore(); });
+  window.onresize = () => { if (location.hash === '#/p/' + id && det.open) linhas(); };
+}
+vPessoa = (orig => function (id) { return celular() ? vPessoaCel(id) : orig(id); })(vPessoa);
+
+// ================================================================ CONFERÊNCIA (celular): tudo recolhido, com o número
+async function vPendCel() {
+  const P = Object.values(PESSOAS);
+  app.innerHTML = '<div class="mut">verificando…</div>';
+  const C = await (await fetch('/api/coerencia')).json();
+  const filhos = {}; P.forEach(p => [p.pai_id, p.mae_id].forEach(i => { if (i) (filhos[i] ||= []).push(p); }));
+  const grupos = [
+    ['📝 Completar depois', filaLista()],
+    ['Data inválida', P.filter(p => p.data_nascimento && p.dias === null)],
+    ['Esqueletos', P.filter(p => p.esqueleto).sort((a, b) => (filhos[b.id] || []).length - (filhos[a.id] || []).length)],
+    ['Completas sem data', P.filter(p => !p.esqueleto && !p.data_nascimento)],
+    ['Sem pai nem mãe', P.filter(p => !p.esqueleto && !p.pai_id && !p.mae_id)],
+    ['Sem foto', P.filter(p => !p.esqueleto && !p.foto)],
+    ['Sem fonte', P.filter(p => !p.esqueleto && !p.fonte)]];
+  const det = (t, n, corpo) => `<details class="fi-det"><summary>${t} <span class="n">${n}</span></summary>${corpo}</details>`;
+  app.innerHTML = `<div class="cel-cab"><div><h1>Conferência</h1><div class="cel-data">o que o banco checa sozinho</div></div></div>
+    ${det('⚠️ Coisas que não batem', C.length, `<div class="lista-cel">${C.slice(0, 150).map(a => `<div class="lp"><div class="lp-t"><b>${a.ids.map(i => `<a href="#/p/${esc(i)}">${esc(PESSOAS[i]?.nome || i)}</a>`).join(' · ')}</b><small>${esc(a.msg)}</small></div><span class="pill ${a.sev === 'erro' ? 'verm' : a.sev === 'aviso' ? 'amar' : 'cinza'}">${a.sev === 'info' ? 'talvez' : esc(a.sev)}</span></div>`).join('') || '<div class="vazio">nada incoerente 🎉</div>'}</div>`)}
+    ${grupos.map(([t, l]) => det(t, l.length, `<div class="lista-cel">${l.slice(0, 150).map(linhaPessoa).join('') || '<div class="vazio">nada</div>'}${l.length > 150 ? `<div class="mut small" style="padding:8px">+${l.length - 150} (use a busca de Pessoas)</div>` : ''}</div>`)).join('')}`;
+}
+vPend = (orig => function () { return celular() ? vPendCel() : orig(); })(vPend);
+
+// ================================================================ ＋ CADASTRO EXPRESSO (padrão ligado)
+let XP_PRE = null, XP_FOTO = null;
+function mascaraData(inp) {
+  inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('maxlength', '10');
+  inp.addEventListener('input', () => {
+    const d = inp.value.replace(/\D/g, '').slice(0, 8);
+    const v = d.length > 4 ? `${d.slice(0, 2)}/${d.slice(2, 4)}/${d.slice(4)}` : d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
+    if (v !== inp.value) inp.value = v;
+    inp.classList.toggle('erro', v.length === 10 && !parseDataBR(v));
+  });
+}
+function contextoPre(pre) {
+  if (!pre) return '';
+  if (pre.filhoDe && PESSOAS[pre.filhoDe]) return 'Filho(a) de ' + PESSOAS[pre.filhoDe].nome;
+  if (pre.irmaoDe && PESSOAS[pre.irmaoDe]) return 'Irmão/irmã de ' + PESSOAS[pre.irmaoDe].nome + ' (mesmos pais)';
+  if (pre.paiDe && PESSOAS[pre.paiDe]) return (pre.lado === 'pai' ? 'Pai' : 'Mãe') + ' de ' + PESSOAS[pre.paiDe].nome;
+  return '';
+}
+function abrirExpresso(pre, vals) {
+  XP_PRE = pre || null; XP_FOTO = null; vals = vals || {};
+  const ctx = contextoPre(pre);
+  $('#form').innerHTML = `<div class="xp-topo"><label class="xp-tog"><input type="checkbox" checked onchange="trocarModo(false)"><span class="sw"></span><b>⚡ Expresso</b></label>
+      <span class="mut small">nome, nascimento e foto</span></div>
+    <h2>Nova pessoa</h2>${ctx ? `<div class="obs" style="margin:0 0 12px">${esc(ctx)}</div>` : ''}
+    <div class="xp">
+      <label class="campo"><span>Nome completo</span><input id="xp_nome" autocomplete="off" autocapitalize="words" value="${esc(vals.nome || '')}"></label>
+      <label class="campo"><span>Data de nascimento</span><input id="xp_nasc" placeholder="DD/MM/AAAA" value="${esc(vals.nasc || '')}"></label>
+      <label class="xp-foto"><input type="file" id="xp_foto" accept="image/*" hidden><span class="xp-prev" id="xp_prev">📷</span><span id="xp_ftxt">Foto (opcional)</span></label>
+      <label class="xp-chk"><input type="checkbox" id="xp_rev" ${vals.rev ? 'checked' : ''}><span><b>📝 Completar depois</b><small>vai pra fila "Completar" pra você buscar mais dados; entra como pessoa normal</small></span></label>
+    </div>
+    <div class="fbtns"><button class="btn" onclick="fecharForm()">Cancelar</button><button class="btn p" id="xp_ok" onclick="salvarExpresso()">Salvar</button></div>`;
+  mascaraData($('#xp_nasc'));
+  $('#xp_foto').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+    r.onload = () => { XP_FOTO = { nome: f.name, b64: r.result }; $('#xp_prev').innerHTML = `<img src="${r.result}" alt="">`; $('#xp_ftxt').textContent = 'Trocar foto'; }; r.readAsDataURL(f); };
+  $('#modal').classList.add('on'); setTimeout(() => $('#xp_nome').focus(), 60);
+}
+function trocarModo(expresso) {
+  if (expresso) {
+    const vals = { nome: ($('#in_nome') || {}).value, nasc: ($('#in_nasc') || {}).value, rev: ($('#in_revisar') || {}).checked };
+    abrirExpresso(XP_PRE, vals);
+  } else {
+    const vals = { nome: $('#xp_nome').value, nasc: $('#xp_nasc').value, rev: $('#xp_rev').checked };
+    abrirForm(null, { ...(XP_PRE || {}), _completo: true });
+    if (vals.nome) $('#in_nome').value = vals.nome; if (vals.nasc) $('#in_nasc').value = vals.nasc;
+    const r = $('#in_revisar'); if (r) r.checked = !!vals.rev;
+  }
+}
+async function salvarExpresso() {
+  const nome = $('#xp_nome').value.trim().replace(/\s+/g, ' '), nasc = $('#xp_nasc').value.trim(), rev = $('#xp_rev').checked;
+  if (!nome) { toast('Escreve o nome'); $('#xp_nome').focus(); return; }
+  if (nasc && !parseDataBR(nasc)) { toast('Data precisa ser DD/MM/AAAA'); $('#xp_nasc').focus(); return; }
+  const ja = Object.values(PESSOAS).filter(x => norm(x.nome) === norm(nome));
+  if (ja.length && !await perguntar(`Já existe ${ja.length === 1 ? 'uma ficha' : ja.length + ' fichas'} com o nome "${nome}"${ja[0].data_nascimento ? ` (nascida em ${ja[0].data_nascimento})` : ''}. Criar outra pessoa mesmo assim?`, 'Criar outra')) return;
+  const body = { id: '', nome, data_nascimento: nasc, revisar: rev };
+  const pre = XP_PRE || {};
+  if (pre.filhoDe && PESSOAS[pre.filhoDe]) { const g = PESSOAS[pre.filhoDe]; body[fem(g) ? 'mae_id' : 'pai_id'] = g.id; }
+  if (pre.irmaoDe && PESSOAS[pre.irmaoDe]) { const g = PESSOAS[pre.irmaoDe]; if (g.pai_id) body.pai_id = g.pai_id; if (g.mae_id) body.mae_id = g.mae_id; }
+  if (pre.paiDe && PESSOAS[pre.paiDe]) { body.ligar_a = { id: pre.paiDe, lado: pre.lado }; body.sexo = pre.lado === 'pai' ? 'Masculino' : 'Feminino'; }
+  $('#xp_ok').disabled = true;
+  const j = await (await fetch('/api/salvar', { method: 'POST', body: JSON.stringify(body) })).json();
+  if (j.erro) { $('#xp_ok').disabled = false; toast('Erro: ' + j.erro); return; }
+  PESSOAS = j.pessoas; PAD = null;
+  if (XP_FOTO) { const f = await (await fetch('/api/foto', { method: 'POST', body: JSON.stringify({ id: j.id, nome: XP_FOTO.nome, base64: XP_FOTO.b64 }) })).json(); if (f.foto && PESSOAS[j.id]) PESSOAS[j.id].foto = f.foto; }
+  fecharForm(); toast((rev ? '📝 Na fila: ' : 'Salvo: ') + nome);
+  if (location.hash === '#/p/' + j.id) render(); else location.hash = '#/p/' + j.id;
+}
+abrirForm = (orig => function (id, pre) {
+  if (!id && !(pre && pre._completo)) return abrirExpresso(pre);
+  if (pre && pre._completo) { const { _completo, ...resto } = pre; pre = Object.keys(resto).length ? resto : undefined; XP_PRE = pre || null; }
+  orig(id, pre);
+  const p = id ? PESSOAS[id] : null;
+  const esq = $('#in_esq'); if (esq) esq.closest('div').insertAdjacentHTML('beforeend',
+    `<label class="chk"><input type="checkbox" id="in_revisar" ${p && p.revisar ? 'checked' : ''}> 📝 completar depois</label>`);
+  if (!id) $('#form').insertAdjacentHTML('afterbegin', `<div class="xp-topo"><label class="xp-tog"><input type="checkbox" onchange="trocarModo(true)"><span class="sw"></span><b>⚡ Expresso</b></label>
+    <span class="mut small">desligado: cadastro completo</span></div>`);
+  const n = $('#in_nasc'); if (n) mascaraData(n);
+})(abrirForm);
+// o formulário completo manda o "completar depois" junto (o salvar() do painel não conhece o campo)
+registrarSalvar = (orig => async function (corpo) {
+  const c = document.getElementById('in_revisar');
+  if (c && $('#modal').classList.contains('on') && !('revisar' in corpo)) corpo.revisar = c.checked;
+  return orig(corpo);
+})(registrarSalvar);
+// virar o celular / mudar a largura da janela: troca entre a tela do celular e a do Mac
+let _larg = celular();
+window.addEventListener('resize', () => { const c = celular(); if (c !== _larg) { _larg = c; if (!algoAberto()) render(); } });
 
 // ================================================================ início
 $('#arq-importar').addEventListener('change', async e => { const f = e.target.files[0]; e.target.value = ''; if (f) await importarArquivo(f); });

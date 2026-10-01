@@ -1,5 +1,5 @@
 {
- "version": "1.2",
+ "version": "1.2.1",
  "date": "2026-10-01",
- "notes": "Árvore completa: todo mundo ligado por pai/mãe (primos de qualquer grau, tios-avós, irmãos dos avós…), com o que cada um é da ficha aberta; arrastar, pinça, tela cheia e lista por grau de parentesco."
+ "notes": "Tocar numa pessoa abre direto a árvore dela em tela cheia (nome, nascimento, idade e WhatsApp em cima; ⋯ pro resto da ficha). Árvore só com a família de sangue. Campos novos: tipo sanguíneo, naturalidade, RG e cartão SUS."
 }

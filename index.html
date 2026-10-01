@@ -643,35 +643,147 @@ h2 .n{color:var(--mut); font-weight:400; font-size:12px; text-transform:none; le
 .lk.zap{border-color:rgba(74,222,128,.34); color:#86efac; background:rgba(74,222,128,.08)}
 .lk.zap:hover{border-color:rgba(74,222,128,.7); background:rgba(74,222,128,.16)}
 
-/* ================================================================ árvore */
-.arv{position:relative; border:1px solid var(--line); border-radius:var(--r); padding:34px 18px 22px;
-  overflow-x:auto; background:radial-gradient(900px 440px at 50% 0%,rgba(123,140,255,.08),transparent 64%),var(--surf)}
-.arv svg{position:absolute; left:0; top:0; pointer-events:none; overflow:visible}
-.gen{position:relative; display:flex; gap:16px; justify-content:center; align-items:flex-start;
-  flex-wrap:nowrap; margin:0 0 70px; min-width:max-content}
-.gen:last-child{margin-bottom:8px}
-.gen .lbl{position:absolute; left:0; top:-20px; font-size:10px; color:var(--mut2);
-  text-transform:uppercase; letter-spacing:.14em; font-weight:650}
-.sep{width:30px; flex:none}
-.pc{width:128px; flex:none; border:1px solid var(--line); border-radius:var(--r2); padding:13px 9px;
-  text-align:center; font-size:12px; cursor:pointer; transition:all var(--t);
-  background:linear-gradient(165deg,rgba(28,30,48,.95),rgba(18,19,32,.92)); position:relative; z-index:1}
-.pc:hover{border-color:rgba(123,140,255,.6); transform:translateY(-3px);
-  box-shadow:0 12px 32px rgba(0,0,0,.55), 0 0 26px rgba(123,140,255,.25)}
-.pc .ph{width:52px;height:52px;border-radius:50%;margin:0 auto 9px;font-size:19px}
-.pc .nm{font-size:11.5px; line-height:1.3; font-weight:600}
-.pc .rl{color:var(--acc); font-size:9.5px; margin-top:5px; font-weight:650;
-  text-transform:uppercase; letter-spacing:.06em}
-.pc .dt{color:var(--mut2); font-size:10.5px; margin-top:2px}
-.pc.main{width:162px; border-color:rgba(123,140,255,.7);
-  background:linear-gradient(160deg,rgba(123,140,255,.26),rgba(20,21,34,.95));
-  box-shadow:0 0 40px rgba(123,140,255,.25)}
-.pc.main .ph{width:66px;height:66px}
-.pc.side{opacity:.8}
-.pc.side .rl{color:var(--acc3)}
-.pc.lig .rl{color:var(--acc2); text-transform:none; letter-spacing:0; font-size:10.5px}
-.pc.esq{border-style:dashed; border-color:rgba(251,191,36,.38)}
-.pc.esq .ph{background:rgba(251,191,36,.09); color:var(--warn)}
+/* ================================================================ árvore completa (v2 · 01/10/2026)
+   Uma linha por geração, casais colados, linhas em pente (pais → barra → filhos), arrastar/pinça/zoom.
+   Embaixo do nome: o que a pessoa é da ficha aberta. Tracejado verde = ligado sem sangue. */
+.avw{position:relative}
+.av-tit{display:none}
+.av-bar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 9px}
+.av-seg{display:inline-flex; flex:none; padding:3px; gap:2px; border-radius:12px; background:var(--surf); border:1px solid var(--line)}
+.av-seg button{border:0; background:transparent; color:var(--ink2); padding:7px 12px; border-radius:9px; font-size:12.5px; font-weight:600; white-space:nowrap; transition:background var(--t),color var(--t)}
+.av-seg button:hover{color:#fff}
+.av-seg button.on{background:linear-gradient(145deg,var(--acc),var(--acc-d)); color:#fff; box-shadow:0 4px 14px rgba(123,140,255,.32)}
+.av-seg button i{font-style:normal; font-size:11px; padding:1px 7px; border-radius:99px; background:rgba(255,255,255,.12); margin-left:5px}
+.av-tg{display:inline-flex; flex:none; gap:7px; align-items:center; font-size:12.5px; color:var(--ink2); cursor:pointer; white-space:nowrap}
+.av-tg input{accent-color:var(--acc)}
+.av-cheia-bt{margin-left:auto; flex:none; border:1px solid var(--line2); background:var(--surf); color:var(--ink); border-radius:11px; padding:7px 13px; font-size:12.5px; font-weight:600; white-space:nowrap}
+.av-cheia-bt:hover{border-color:rgba(123,140,255,.6)}
+.av-resumo{font-size:12.5px; color:var(--mut); margin:0 0 10px}
+.av-resumo b{color:var(--ink); font-weight:650}
+.av-vazio{padding:22px; border:1px dashed var(--line2); border-radius:var(--r2); color:var(--mut); text-align:center}
+/* janela da árvore */
+.av-vp{position:relative; height:560px; border:1px solid var(--line); border-radius:var(--r); overflow:hidden;
+  touch-action:none; cursor:grab; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none;
+  background:radial-gradient(900px 440px at 50% 0%,rgba(123,140,255,.09),transparent 64%),
+    radial-gradient(circle at 1px 1px,rgba(255,255,255,.05) 1px,transparent 0) 0 0/22px 22px,var(--surf)}
+.av-vp.arrastando{cursor:grabbing}
+.av-palco{position:absolute; left:0; top:0; transform-origin:0 0; will-change:transform}
+.av-palco svg{position:absolute; left:0; top:0; overflow:visible; pointer-events:none}
+.av-palco .u path{fill:none; stroke-linecap:round; stroke-linejoin:round; transition:opacity .2s}
+.av-palco .u.sg path,.av-palco .u.dir path{stroke:rgba(150,162,255,.5); stroke-width:1.5}
+.av-palco .u.dir .ud,.av-palco .u.dir .cl,.av-palco .u.dir .pd,.av-palco .u.dir .cd.dir{stroke:#8b9bff; stroke-width:2.4; filter:drop-shadow(0 0 4px rgba(123,140,255,.55))}
+.av-palco .u.ss path{stroke:rgba(63,216,194,.55); stroke-width:1.4; stroke-dasharray:5 5}
+.av-palco .pl text{font:600 11px -apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif}
+.av-palco.apaga .av-c:not(.cam){opacity:.26}
+.av-palco.apaga .u path,.av-palco.apaga .pl{opacity:.2}
+.av-palco.apaga .u path.cam{opacity:1; stroke:#fff; stroke-width:2.6; stroke-dasharray:none; filter:drop-shadow(0 0 5px rgba(255,255,255,.55))}
+/* cards */
+.av-c{position:absolute; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; text-align:center; overflow:hidden;
+  padding:11px 8px 9px; border:1px solid var(--line2); border-radius:16px; cursor:pointer; z-index:1;
+  background:linear-gradient(165deg,rgba(30,32,52,.97),rgba(17,18,30,.97));
+  transition:border-color .2s,box-shadow .2s,opacity .2s}
+.av-c:hover{border-color:rgba(123,140,255,.75); box-shadow:0 10px 28px rgba(0,0,0,.5),0 0 22px rgba(123,140,255,.28)}
+.av-f{width:50px; height:50px; border-radius:50%; flex:none; margin:0 0 8px; object-fit:cover; display:block; pointer-events:none;
+  box-shadow:0 0 0 2px rgba(255,255,255,.06)}
+.av-f.none{display:grid; place-items:center; background:var(--surf2); font-size:20px; color:var(--mut2)}
+.av-n{font-size:12px; font-weight:650; line-height:1.25; color:var(--ink); min-height:30px; width:100%;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.av-r{margin-top:5px; font-size:11px; font-weight:700; line-height:1.22; color:#aab5ff; width:100%;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+.av-d{margin-top:2px; font-size:10px; color:var(--mut); width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.av-a{margin-top:auto; padding-top:3px; font-size:10.5px; color:var(--mut2); white-space:nowrap}
+.av-x{position:absolute; top:8px; right:10px; font-size:12px; color:var(--mut)}
+.av-c.main{border-color:rgba(123,140,255,.9); background:linear-gradient(160deg,rgba(123,140,255,.32),rgba(20,21,34,.97));
+  box-shadow:0 0 0 4px rgba(123,140,255,.13),0 0 46px rgba(123,140,255,.34)}
+.av-c.main .av-f{width:70px; height:70px; box-shadow:0 0 0 3px rgba(123,140,255,.45)}
+.av-c.main .av-n{font-size:13px}
+.av-c.main .av-r{color:#cfd5ff; text-transform:uppercase; letter-spacing:.1em; font-size:9.5px}
+.av-c.dir{border-color:rgba(123,140,255,.5)}
+.av-c.ss{border-style:dashed; border-color:rgba(63,216,194,.42); background:linear-gradient(165deg,rgba(20,33,40,.96),rgba(14,18,26,.96))}
+.av-c.ss .av-r{color:#62e4d0}
+.av-c.esq{border-style:dashed; border-color:rgba(251,191,36,.45)}
+.av-c.esq .av-f{color:var(--warn); background:rgba(251,191,36,.1)}
+.av-c.cam{border-color:#fff; border-style:solid; box-shadow:0 0 0 3px rgba(255,255,255,.14),0 0 30px rgba(123,140,255,.5)}
+/* controles, rótulo das gerações, caminho */
+.av-ctl{position:absolute; right:10px; bottom:10px; z-index:3; display:flex; flex-direction:column; gap:6px}
+.av-ctl button{width:38px; height:38px; border-radius:12px; border:1px solid var(--line2); background:rgba(18,19,32,.86); color:var(--ink);
+  font-size:17px; line-height:1; display:grid; place-items:center; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px)}
+.av-ctl button:hover{border-color:rgba(123,140,255,.6)}
+.av-gens{position:absolute; inset:0; pointer-events:none; z-index:2; overflow:hidden}
+.av-gens span{position:absolute; left:10px; top:0; font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--mut); background:rgba(10,11,17,.72); border:1px solid var(--line); padding:2px 8px; border-radius:99px; white-space:nowrap}
+.av-cam{position:absolute; left:10px; right:60px; bottom:10px; z-index:3; display:none; flex-wrap:wrap; gap:4px 6px; align-items:center;
+  padding:8px 12px; border-radius:12px; background:rgba(14,15,26,.93); border:1px solid var(--line2); font-size:12px; pointer-events:none}
+.av-cam.on{display:flex}
+.av-cam small{color:var(--mut); text-transform:uppercase; letter-spacing:.1em; font-size:9.5px; margin-right:4px}
+.av-cam span.f,.av-sc span.f{color:#cfd5ff; font-weight:700}
+.av-cam span em,.av-sc span em{font-style:normal; color:#aab5ff; font-size:11px}
+.av-cam i,.av-sc i{font-style:normal; color:var(--mut2)}
+/* ficha rápida (toque no celular) */
+.av-sheet{position:absolute; left:8px; right:8px; bottom:8px; z-index:5; padding:14px; border-radius:18px;
+  background:rgba(16,17,29,.97); border:1px solid var(--line2); box-shadow:0 -10px 40px rgba(0,0,0,.55);
+  transform:translateY(calc(100% + 20px)); transition:transform .26s cubic-bezier(.4,0,.2,1); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px)}
+.av-sheet.on{transform:none}
+.av-sx{position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%; border:1px solid var(--line2); background:var(--surf2); color:var(--ink)}
+.av-st{display:flex; gap:12px; align-items:center; padding-right:36px}
+.av-sf{width:58px; height:58px; border-radius:50%; object-fit:cover; flex:none; display:block}
+.av-sf.none{display:grid; place-items:center; background:var(--surf2); font-size:24px; color:var(--mut2)}
+.av-st b{display:block; font-size:15px; line-height:1.25}
+.av-sr{display:block; color:#aab5ff; font-weight:700; font-size:13px; margin-top:2px}
+.av-st small{display:block; color:var(--mut); font-size:12px; margin-top:2px}
+.av-sc{display:flex; flex-wrap:wrap; gap:4px 6px; align-items:center; margin:11px 0 0; padding:9px 11px; border-radius:12px; background:var(--surf); border:1px solid var(--line); font-size:12.5px}
+.av-sb{display:flex; gap:8px; margin-top:11px}
+.av-sb .btn{flex:1; justify-content:center; padding:11px 8px}
+/* legenda */
+.av-leg i.dl{border-color:#8b9bff; background:rgba(123,140,255,.18); box-shadow:0 0 6px rgba(123,140,255,.6)}
+.av-leg i.s{border-style:dashed; border-color:rgba(63,216,194,.6); background:rgba(63,216,194,.08)}
+/* vista em lista */
+.av-filtro{width:100%; margin:0 0 12px; padding:10px 13px; border-radius:12px; border:1px solid var(--line2); background:var(--surf); color:var(--ink); font:inherit}
+.av-lg{margin:0 0 16px}
+.av-lg h4{display:flex; align-items:center; gap:8px; margin:0 0 7px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.11em; color:var(--mut)}
+.av-lg h4 .n{font-size:11px; letter-spacing:0; color:var(--ink2); background:var(--surf2); border:1px solid var(--line); border-radius:99px; padding:0 8px}
+.av-lc{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1px; border:1px solid var(--line); border-radius:var(--r2); overflow:hidden; background:var(--line)}
+.av-li{display:flex; gap:11px; align-items:center; padding:9px 12px; background:var(--bg2); color:var(--ink); text-decoration:none; min-width:0; transition:background var(--t)}
+.av-li:hover{background:var(--bg3); color:var(--ink); text-decoration:none}
+.av-lf{width:42px; height:42px; border-radius:50%; object-fit:cover; flex:none; display:block}
+.av-lf.none{display:grid; place-items:center; background:var(--surf2); font-size:17px; color:var(--mut2)}
+.av-li.ss .av-lf{box-shadow:0 0 0 2px rgba(63,216,194,.45)}
+.av-li.esq .av-lf{box-shadow:0 0 0 2px rgba(251,191,36,.45)}
+.av-lt{flex:1; min-width:0}
+.av-lt b{display:block; font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.av-lt small{display:block; font-size:12px; color:var(--mut); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.av-lt small em{font-style:normal; color:#aab5ff; font-weight:650}
+.av-li.ss .av-lt small em{color:#62e4d0}
+.av-li-s{color:var(--mut2); font-size:18px; flex:none}
+/* tela cheia */
+html.av-trava,html.av-trava body{overflow:hidden}
+.avw.cheia{position:fixed; inset:0; z-index:400; display:flex; flex-direction:column; background:var(--bg);
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 10px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.avw.cheia::before{content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(900px 600px at 10% -10%,rgba(123,140,255,.16),transparent 60%)}
+.avw.cheia .av-cheia-bt{position:absolute; z-index:6; top:calc(env(safe-area-inset-top,0px) + 6px); right:10px; background:rgba(18,19,32,.92)}
+.avw.cheia .av-tit{padding-right:110px!important;
+  display:block; font-size:15px; font-weight:700; margin:2px 4px 9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:4px}
+.avw.cheia .av-vp{flex:1; height:auto!important; min-height:0}
+.avw.cheia .av-leg{display:none}
+.avw.cheia .av-lista{flex:1; overflow:auto; -webkit-overflow-scrolling:touch}
+.avw.cheia .av-resumo{margin-bottom:8px}
+/* celular / tela de toque */
+.avw.toque .av-bar{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding-bottom:1px}
+.avw.toque .av-bar::-webkit-scrollbar{display:none}
+.avw.toque .av-vp{height:calc(100dvh - 290px); min-height:400px; border-radius:18px}
+.avw.toque .av-ctl{right:8px; bottom:8px}
+.avw.toque .av-ctl button{width:44px; height:44px; font-size:19px}
+.avw.toque .av-c:hover{box-shadow:none; border-color:var(--line2)}
+.avw.toque .av-c.main:hover{border-color:rgba(123,140,255,.9)}
+.avw.toque .av-leg{display:none}
+.avw.toque .av-lc{grid-template-columns:1fr}
+.avw.toque .av-seg button{padding:8px 12px; font-size:13px}
+@media (max-width:760px){
+  .av-gens span{font-size:9px; padding:2px 7px}
+  .av-cam{right:58px}
+}
+
 .legenda{font-size:11.5px; color:var(--mut); margin-top:14px; display:flex; gap:20px; flex-wrap:wrap; align-items:center}
 .legenda i{display:inline-block; width:12px;height:12px;border-radius:5px; border:1px solid var(--line2);
   margin-right:7px; vertical-align:-2px; background:var(--surf2)}
@@ -2208,12 +2320,6 @@ async function vDescobertas(){
 function buscarPor(t){$('#busca').value=t; location.hash='#/pessoas'; render();}
 
 // ------------------------------------------------------------ pessoa + árvore
-function rel(p,base){ // rótulo por sexo
-  const f=fem(p);
-  return {pai:'Pai',mae:'Mãe',avo_p:f?'Avó paterna':'Avô paterno',avo_m:f?'Avó materna':'Avô materno',bis:f?'Bisavó':'Bisavô',
-    irm:f?'Irmã':'Irmão',meio:f?'Meia-irmã':'Meio-irmão',tio_p:f?'Tia paterna':'Tio paterno',tio_m:f?'Tia materna':'Tio materno',
-    tioavo:f?'Tia-avó':'Tio-avô',primo:f?'Prima':'Primo',filho:f?'Filha':'Filho',neto:f?'Neta':'Neto',sob:f?'Sobrinha':'Sobrinho'}[base];
-}
 // ---------------- dossiê: nada aqui é digitado, tudo é calculado das 7 informações fixas
 function chips(F){
   const c=(F.etiquetas||[]).map(x=>`<span class="chip">${esc(x)}</span>`);
@@ -2316,7 +2422,7 @@ async function vPessoa(id){
   const R=F.parentes;
   const l=wa(p);
   const kv=[['Nascimento',p.data_nascimento?`${esc(p.data_nascimento)}${p.idade!==null?` (${p.idade} anos)`:' <span class="mut">— data inválida</span>'}`:'<span class="mut">—</span>'],
-    ['Apelido',esc(p.apelido)],['CPF',esc(p.cpf)],['Sexo',esc(p.sexo)],['Ofício',esc(p.oficio)],
+    ['Apelido',esc(p.apelido)],['CPF',esc(p.cpf)],['Sexo',esc(p.sexo)],['Tipo sanguíneo',esc(tsTxt(p.tipo_sanguineo))],['Ofício',esc(p.oficio)],
     ['Telefone',p.telefone?`${esc(p.telefone)}`:''],['E-mail',p.email?`<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>`:''],
     ['Procedência',esc(p.fonte_detalhe||'')],
     ['Onde mora',p.local||p.endereco?`${esc(p.endereco||'pino no mapa')} <a href="#/mapa?p=${p.id}">📍 ver no mapa</a>
@@ -2343,122 +2449,526 @@ async function vPessoa(id){
 </div></div></div>
   ${blocoFatos(F,p)}
   ${blocoCruzado(F,p)}
-  <h2>🌳 Árvore genealógica <span class="n">só o que está nas fichas · clique em alguém para ver a árvore dele</span>
-    <label class="chk" style="margin-left:auto"><input type="checkbox" id="lat" checked onchange="desenharArvore()"> mostrar tios, primos, sobrinhos</label></h2>
-  <div class="arv" id="arv"></div>
-  <div class="legenda"><span><i class="m"></i>pessoa</span><span><i></i>parente</span><span><i class="d"></i>ficha esqueleto (falta completar)</span><span>linha = pai/mãe → filho(a)</span><span style="color:#28e0c8">◆ etiqueta na linha = idade do pai/mãe quando este filho nasceu</span></div>`;
-  app._R=R; app._p=p; app._F=F; desenharArvore();
-  window.onresize=()=>{if(location.hash==='#/p/'+id)linhas()};
+  <h2>🌳 Árvore genealógica <span class="n">todo mundo ligado por pai/mãe · embaixo de cada um, o que é de ${esc(p.nome.split(' ')[0])} · clique para abrir</span></h2>
+  <div id="arv-wrap"></div>`;
+  app._R=R; app._p=p; app._F=F; arvDesenhar(p.id,$('#arv-wrap'));
+  window.onresize=null;
 }
-function pc(id,rot,tipo){const q=PESSOAS[id];if(!q)return'';
-  return `<div class="pc ${tipo||''} ${q.esqueleto?'esq':''}" data-id="${id}" onclick="location.hash='#/p/${id}'">${foto(q)}<div class="nm">${esc(q.nome)}</div><div class="rl">${rot}</div><div class="dt">${ano(q)||(q.esqueleto?'sem dados':'')}${q.falecido?' ✝':''}</div></div>`}
-function desenharArvore(){
-  const R=app._R,p=app._p,lat=$('#lat').checked;
-  // Cada geração é uma lista de {id, rot, tipo}. Geração 0 = a pessoa aberta.
-  const G={'-3':[],'-2':[],'-1':[],'0':[],'1':[],'2':[]};
-  const add=(g,ids,base,tipo)=>ids.forEach(i=>G[g].push({id:i,rot:rel(PESSOAS[i],base),tipo:tipo||''}));
-  add(-3,R.bisavos,'bis');
-  add(-2,R.avos_paternos,'avo_p'); add(-2,R.avos_maternos,'avo_m'); if(lat) add(-2,R.tios_avos,'tioavo','side');
-  if(lat) add(-1,R.tios_paternos,'tio_p','side');
-  if(R.pai) G[-1].push({id:R.pai,rot:'Pai',tipo:''});
-  if(R.mae) G[-1].push({id:R.mae,rot:'Mãe',tipo:''});
-  if(lat) add(-1,R.tios_maternos,'tio_m','side');
-  add(0,R.irmaos,'irm','side'); add(0,R.meios_irmaos,'meio','side');
-  G[0].push({id:p.id,rot:p.esqueleto?'esqueleto':'',tipo:'main'});
-  if(lat) add(0,R.primos,'primo','side');
-  add(1,R.filhos,'filho'); if(lat) add(1,R.sobrinhos,'sob','side');
-  add(2,R.netos,'neto');
-  completarPais(G);
-  const NOMES={'-3':'Bisavós','-2':'Avós','-1':'Pais','0':'','1':'Filhos','2':'Netos'};
-  const html=['-3','-2','-1','0','1','2'].filter(g=>G[g].length).map(g=>
-    `<div class="gen">${NOMES[g]?`<div class="lbl">${NOMES[g]}</div>`:''}${G[g].map(c=>
-      pc(c.id,c.rot,(c.tipo==='main'?' main':c.tipo)).replace('class="pc ',`data-junto="${c.junto||''}" class="pc `)).join('')}</div>`).join('');
-  $('#arv').innerHTML='<svg></svg>'+html;
-  ordenar(); linhas(); escalonar();
-}
-// A REGRA QUE FALTAVA: todo filho que aparece na árvore traz os DOIS pais para a linha de
-// cima. Antes, a árvore da mãe mostrava os filhos dela mas não o homem com quem ela os teve
-// (e o mesmo com o pai de um meio-irmão, a mãe dos netos, o marido da tia que teve os primos).
-// Não existe vínculo de casal: o card novo é identificado pelo FILHO — "Pai de Fulana".
-function completarPais(G){
-  const ja=new Set(Object.values(G).flat().map(c=>c.id));
-  for(const g of ['2','1','0','-1','-2']){
-    const acima=String(+g-1), novos={};
-    for(const c of G[g]){
-      // quem entrou pelo filho não puxa os próprios pais: na árvore da mãe, o pai dos filhos
-      // aparece, mas os pais DELE (sogros dela) não — seria ruído.
-      if((c.tipo||'').includes('lig'))continue;
-      const f=PESSOAS[c.id]; if(!f)continue;
-      for(const lado of ['pai_id','mae_id']){
-        const pid=f[lado]; if(!pid||!PESSOAS[pid]||ja.has(pid))continue;
-        const outro=f[lado==='pai_id'?'mae_id':'pai_id'];
-        (novos[pid]=novos[pid]||{filhos:[],junto:outro||''}).filhos.push(f);
-      }
-    }
-    for(const [pid,info] of Object.entries(novos)){
-      const q=PESSOAS[pid], nomes=info.filhos.map(x=>esc(x.nome.split(' ')[0]));
-      const quem=nomes.length<=2?nomes.join(' e '):nomes.slice(0,2).join(', ')+' +'+(nomes.length-2);
-      const lateral=info.filhos.every(x=>G[g].find(c=>c.id===x.id)?.tipo==='side');
-      G[acima].push({id:pid,rot:(fem(q)?'Mãe de ':'Pai de ')+quem,tipo:'lig'+(lateral?' side':''),junto:info.junto});
-      ja.add(pid);
-    }
+// ================================================================ ÁRVORE COMPLETA (v2 · 01/10/2026)
+// Pedido dele (01/10/2026): "a árvore só mostra no máximo a tia — quero que mostre TODO MUNDO que está conectado
+// (primos, irmão da avó, irmão do pai…) e, embaixo de cada um, o que aquela pessoa é da ficha aberta".
+//   • SANGUE  = todo descendente de todo ancestral da pessoa aberta, sem limite de grau (primo de 3º grau,
+//               tio-bisavô, filho do primo…), + o pai/mãe que falta de cada filho que aparece (card "Pai de …").
+//   • TUDO CONECTADO = qualquer pessoa alcançável por pai/mãe/filho (a família dos meio-irmãos, a do outro lado
+//               dos primos…). Quem não é de sangue aparece tracejado e descrito pelo FATO ("Pai de Fulana" ·
+//               "Fulana é meia-irmã") — nunca vira "tio de consideração" (regra dele: só parentesco documentado).
+//   • Tudo é calculado aqui, só com pai_id/mae_id, então o painel do Mac e o app do celular desenham igual.
+//   • Desenho em camadas (uma linha por geração), casais colados, irmãos juntos por ordem de nascimento,
+//     linhas em "pente" (pais → barra → filhos), o lado do pai à esquerda e o da mãe à direita.
+const ARV = {modo:'tudo', vista:'arvore', idades:false};
+try{const s=JSON.parse(localStorage.getItem('arv_pref')||'{}');
+  if(s.modo==='sangue'||s.modo==='tudo')ARV.modo=s.modo; if(s.vista==='lista'||s.vista==='arvore')ARV.vista=s.vista; ARV.idades=!!s.idades}catch(e){}
+function arvPref(){try{localStorage.setItem('arv_pref',JSON.stringify({modo:ARV.modo,vista:ARV.vista,idades:ARV.idades}))}catch(e){}}
+const arvToque=()=>window.matchMedia('(hover:none)').matches||window.innerWidth<=900;
+
+// ---------------------------------------------------------------- índices e utilidades
+function arvIdx(){
+  if(ARV._de===PESSOAS) return ARV._f;
+  const f={};
+  for(const q of Object.values(PESSOAS)) for(const k of ['pai_id','mae_id']){
+    const i=q[k]; if(i&&i!==q.id&&PESSOAS[i]) (f[i]||(f[i]=[])).push(q.id);
   }
+  ARV._f=f; ARV._de=PESSOAS; return f;
 }
-// Reordena cada geração pela posição média dos pais na geração de cima (menos cruzamento).
-// Depois, quem entrou pela regra acima vai para o lado de quem teve os filhos com ele:
-// o homem à esquerda, a mulher à direita, como os outros casais da árvore.
-function ordenar(){
-  const gens=[...document.querySelectorAll('#arv .gen')];
-  let prev=null;
-  gens.forEach(g=>{
-    if(prev){
-      const idx={};[...prev.querySelectorAll('.pc')].forEach((c,i)=>idx[c.dataset.id]=i);
-      const cards=[...g.children].filter(c=>c.classList.contains('pc')&&!c.classList.contains('lig'));
-      const key=c=>{const q=PESSOAS[c.dataset.id];
-        const ks=[q.pai_id,q.mae_id].filter(i=>i in idx).map(i=>idx[i]);
-        return ks.length?ks.reduce((a,b)=>a+b)/ks.length:(c.classList.contains('main')?5000:9999)};
-      cards.map((c,i)=>[key(c),i,c]).sort((a,b)=>a[0]-b[0]||a[1]-b[1]).forEach(([,,c])=>g.appendChild(c));
+const arvPais=id=>{const q=PESSOAS[id]; return q?[q.pai_id,q.mae_id].filter((i,n,a)=>i&&i!==id&&PESSOAS[i]&&a.indexOf(i)===n):[]};
+const arvNome=q=>String(q&&q.nome||'').replace(/\s*\([^)]*\)/g,'').trim();
+const arvPrim=id=>arvNome(PESSOAS[id]).split(' ')[0]||'?';
+const arvNasc=id=>{const m=/^(\d{2})\/(\d{2})\/(\d{4})$/.exec(String(PESSOAS[id]?.data_nascimento||'').trim()); return m?+(m[3]+m[2]+m[1]):99999999};
+function arvAnc(id){ // {id → quantas gerações acima}; a própria pessoa = 0. À prova de ciclo.
+  const d=new Map([[id,0]]), fila=[id];
+  for(let i=0;i<fila.length;i++){const x=fila[i]; for(const y of arvPais(x)) if(!d.has(y)){d.set(y,d.get(x)+1); fila.push(y)}}
+  return d;
+}
+
+// ---------------------------------------------------------------- o que B é de A (só sangue)
+// Mesma conta do derivados.py/grau(): o ancestral comum mais próximo; da = gerações de A até ele, db = de B.
+function arvGrau(C,b){
+  const lb=arvAnc(b); let x=null, best=1e9, bda=1e9;
+  for(const [i,db] of lb){const da=C.la.get(i); if(da===undefined)continue;
+    if(da+db<best||(da+db===best&&da<bda)){best=da+db; bda=da; x=i}}
+  if(x===null) return null;
+  const da=C.la.get(x), db=lb.get(x), f=fem(PESSOAS[b]), F=(m,w)=>f?w:m;
+  const lado=C.laPai&&C.laPai.has(x)?'pai':C.laMae&&C.laMae.has(x)?'mae':'';
+  const ladoT=lado==='pai'?'lado do pai':lado==='mae'?'lado da mãe':'';
+  const r={da,db,x,rot:'',det:''};
+  // degrau intermediário: a pessoa da linha de A (ou de B) que está na mesma altura do ancestral comum
+  const naLinha=(lin,k,alvo,dist)=>{for(const [i,d] of lin) if(d===k&&arvAnc(i).get(alvo)===dist) return i; return null};
+  if(db===0){
+    r.rot=({1:F('Pai','Mãe'),2:F('Avô','Avó'),3:F('Bisavô','Bisavó'),4:F('Trisavô','Trisavó'),5:F('Tataravô','Tataravó')})[da]||`Ancestral · ${da} gerações`;
+    if(da===2&&lado) r.rot+=lado==='pai'?F(' paterno',' paterna'):F(' materno',' materna');
+    else if(da>2) r.det=ladoT;
+  } else if(da===0){
+    r.rot=({1:F('Filho','Filha'),2:F('Neto','Neta'),3:F('Bisneto','Bisneta'),4:F('Tataraneto','Tataraneta')})[db]||`Descendente · ${db} gerações`;
+  } else if(da===1&&db===1){
+    let comuns=0; for(const [i,d] of lb) if(d===1&&C.la.get(i)===1) comuns++;
+    if(comuns===1){r.rot=F('Meio-irmão','Meia-irmã'); r.det='por parte '+(x===PESSOAS[C.a].pai_id?'de pai':'de mãe')}
+    else r.rot=F('Irmão','Irmã');
+  } else if(da===1){
+    r.rot=({2:F('Sobrinho','Sobrinha'),3:F('Sobrinho-neto','Sobrinha-neta'),4:F('Sobrinho-bisneto','Sobrinha-bisneta')})[db]||`Descendente de irmão`;
+    const s=naLinha(lb,db-1,x,1); if(s) r.det=(fem(PESSOAS[s])?'da irmã ':'do irmão ')+arvPrim(s);
+  } else if(db===1){
+    r.rot=({2:F('Tio','Tia'),3:F('Tio-avô','Tia-avó'),4:F('Tio-bisavô','Tia-bisavó'),5:F('Tio-trisavô','Tia-trisavó')})[da]||F('Irmão de ancestral','Irmã de ancestral');
+    r.det=ladoT;
+  } else if(da===db){
+    const g=da-1; r.rot=arvPrimo(g,f); r.det=[g+'º grau',ladoT].filter(Boolean).join(' · ');
+  } else if(da>db){ // B está acima: é primo(a) de um ascendente de A
+    const k=da-db, g=db-1, L=naLinha(C.la,k,x,db);
+    const quem=L?(['',F2(L,'pai','mãe'),F2(L,'avô','avó'),F2(L,'bisavô','bisavó')][k]||'ancestral'):(k===1?'pai/mãe':'ancestral');
+    r.rot=arvPrimo(g,f)+(L&&fem(PESSOAS[L])?' da ':' do ')+quem;
+    r.det=k===1?(g===1?'1º grau':ladoT):ladoT;
+  } else { // B está abaixo: descende de um primo(a) de A
+    const k=db-da, g=da-1, P=naLinha(lb,k,x,da);
+    r.rot=(({1:F('Filho','Filha'),2:F('Neto','Neta'),3:F('Bisneto','Bisneta')})[k]||'Descendente')
+      +(P&&fem(PESSOAS[P])?' da ':' do ')+arvPrimo(g,P&&fem(PESSOAS[P])).toLowerCase();
+    r.det=[P?arvPrim(P):'',ladoT].filter(Boolean).join(' · ');
+  }
+  return r;
+}
+function F2(id,m,w){return fem(PESSOAS[id])?w:m}
+// "primo segundo" é como se fala: filho do primo do pai = primo de 2º grau
+function arvPrimo(g,f){return ({1:f?'Prima':'Primo',2:f?'Prima segunda':'Primo segundo',3:f?'Prima terceira':'Primo terceiro'})[g]||(f?'Prima':'Primo')+` de ${g}º grau`}
+function arvCat(da,db){ // grupo da vista em lista + ordem (mais perto primeiro)
+  let t;
+  if(db===0) t=['','Pais','Avós','Bisavós','Trisavós','Tataravós'][da]||'Ancestrais mais antigos';
+  else if(da===0) t=['','Filhos','Netos','Bisnetos','Tataranetos'][db]||'Descendentes';
+  else if(da===1&&db===1) t='Irmãos';
+  else if(da===1) t=['','','Sobrinhos','Sobrinhos-netos','Sobrinhos-bisnetos'][db]||'Descendentes dos irmãos';
+  else if(db===1) t=['','','Tios','Tios-avós','Tios-bisavós','Tios-trisavós'][da]||'Irmãos de ancestrais';
+  else{const g=Math.min(da,db)-1,k=Math.abs(da-db),gr=` de ${g}º grau`;
+    const pl=({1:'Primos',2:'Primos segundos',3:'Primos terceiros'})[g]||'Primos'+gr;
+    t=da===db?pl+` (${g}º grau)`:da>db?`${pl} ${['','dos pais','dos avós','dos bisavós'][k]||'de ancestrais'}`
+      :`${['','Filhos','Netos','Bisnetos'][k]||'Descendentes'} de ${pl.toLowerCase()}`}
+  return {t, o:(da+db)*100+(10-da)};
+}
+
+// ---------------------------------------------------------------- quem entra e o que cada um é
+function arvModelo(foco,modo){
+  const f=arvIdx();
+  const P0=PESSOAS[foco];
+  const la=arvAnc(foco);
+  const C={a:foco,la,laPai:P0.pai_id&&PESSOAS[P0.pai_id]?arvAnc(P0.pai_id):null,laMae:P0.mae_id&&PESSOAS[P0.mae_id]?arvAnc(P0.mae_id):null};
+  // sangue: todo descendente de todo ancestral (inclui a própria pessoa e os descendentes dela)
+  const S=new Set();
+  for(const a of la.keys()){const st=[a]; while(st.length){const x=st.pop(); if(S.has(x))continue; S.add(x); for(const c of f[x]||[]) st.push(c)}}
+  const N=new Set(S);
+  if(modo==='tudo'){const st=[...S]; while(st.length){const x=st.pop(); for(const y of [...arvPais(x),...(f[x]||[])]) if(!N.has(y)){N.add(y); st.push(y)}}}
+  else for(const c of S) for(const p of arvPais(c)) N.add(p);   // o outro pai/mãe de cada filho de sangue
+  const info={};
+  for(const id of S){
+    if(id===foco){info[id]={rot:'',det:'',sangue:true,da:0,db:0,cat:{t:'',o:0}}; continue}
+    const g=arvGrau(C,id)||{rot:'Parente',det:'',da:9,db:9};
+    info[id]={...g,sangue:true,cat:arvCat(g.da,g.db)};
+  }
+  // não-sangue (pedido dele, 01/10/2026: "não quero 'filho de Maria' — quero o nível de parentesco"):
+  // o parentesco é contado a partir do parente de sangue mais perto e escrito em cadeia, como se fala:
+  // "Pai dos meio-irmãos", "Primo do primo do pai", "Tia do primo do pai". A conta entre os dois é a mesma
+  // de sangue (ancestral comum), então nunca vira "tio de consideração".
+  const ancN=new Map(), anc=id=>{if(!ancN.has(id))ancN.set(id,arvAnc(id)); return ancN.get(id)};
+  const MASC={'irmã':'irmão','meia-irmã':'meio-irmão','prima':'primo','sobrinha':'sobrinho','sobrinha-neta':'sobrinho-neto','tia':'tio','tia-avó':'tio-avô',
+    'filha':'filho','neta':'neto','bisneta':'bisneto','avó':'avô','bisavó':'bisavô','mãe':'pai','paterna':'paterno','materna':'materno','segunda':'segundo','terceira':'terceiro'};
+  const PLU={'irmão':'irmãos','meio-irmão':'meio-irmãos','avô':'avós','bisavô':'bisavós','trisavô':'trisavós','tio-avô':'tios-avós','sobrinho-neto':'sobrinhos-netos','pai':'pais'};
+  const masc=r=>r.toLowerCase().split(' ').map(w=>MASC[w]||w).join(' ');
+  const PLUF={'irmã':'irmãs','meia-irmã':'meias-irmãs','avó':'avós','bisavó':'bisavós','trisavó':'trisavós','tia-avó':'tias-avós','sobrinha-neta':'sobrinhas-netas','mãe':'mães'};
+  const plural=r=>r.split(' ').map((w,i)=>i===0||/^(segundo|terceiro|paterno|materno)$/.test(w)?(PLU[w]||w+'s'):w).join(' ');
+  const pluralF=r=>r.toLowerCase().split(' ').map((w,i)=>i===0||/^(segunda|terceira|paterna|materna)$/.test(w)?(PLUF[w]||w+'s'):w).join(' ');
+  const SS='Ligados, sem parentesco de sangue';
+  let feitos=new Set(S), nivel=0;
+  while(feitos.size<N.size&&nivel<12){
+    nivel++;
+    const ancoras=[...feitos].filter(A=>A!==foco), novos=[];
+    for(const y of N){ if(feitos.has(y))continue;
+      const ly=anc(y); let best=null;
+      for(const A of ancoras){const la=anc(A); let d=1e9;
+        for(const [i,dy] of ly){const dA=la.get(i); if(dA!==undefined&&dA+dy<d)d=dA+dy}
+        if(d===1e9)continue;
+        const k=d*1e4+(info[A].nivel||0)*100+((info[A].da||0)+(info[A].db||0));
+        if(!best||k<best.k)best={A,k}}
+      if(best)novos.push([y,best.A])}
+    if(!novos.length)break;
+    for(const [y,A] of novos){
+      const g=arvGrau({a:A,la:anc(A)},y)||{rot:'Parente',da:9,db:9};
+      const base=g.rot.replace(/ (paterno|paterna|materno|materna)$/,'');
+      const ra=info[A].rot.charAt(0).toLowerCase()+info[A].rot.slice(1);
+      let rot=`${base} ${fem(PESSOAS[A])?'da':'do'} ${ra}`, det=`${base.toLowerCase()} de ${arvPrim(A)}`;
+      if(g.da===1&&g.db===0){ // pai/mãe de mais de um parente com o mesmo parentesco: "Pai dos meio-irmãos"
+        const kids=(f[y]||[]).filter(c=>feitos.has(c)&&c!==foco&&info[c]).sort((a,b)=>arvNasc(a)-arvNasc(b));
+        const ms=[...new Set(kids.map(c=>masc(info[c].rot)))];
+        const todasF=kids.every(c=>fem(PESSOAS[c])), fs=[...new Set(kids.map(c=>info[c].rot.toLowerCase()))];
+        if(kids.length>1&&ms.length===1){rot=`${fem(PESSOAS[y])?'Mãe':'Pai'} ${todasF&&fs.length===1?'das '+pluralF(fs[0]):'dos '+plural(ms[0])}`;
+          const nm=kids.map(arvPrim); det=nm.length<=3?nm.slice(0,-1).join(', ')+' e '+nm[nm.length-1]:nm.slice(0,2).join(', ')+` e mais ${nm.length-2}`}}
+      if(rot.length>46){rot=`${base} de ${arvPrim(A)}`; det=`${arvPrim(A)} é ${ra}`}
+      info[y]={rot,det,sangue:false,ref:A,nivel,da:g.da,db:g.db,cat:{t:SS,o:1e6+nivel}};
     }
-    [...g.querySelectorAll('.pc.lig')].forEach(c=>{
-      const par=c.dataset.junto&&g.querySelector(`.pc[data-id="${c.dataset.junto}"]`);
-      if(!par){g.appendChild(c);return}
-      if(fem(PESSOAS[c.dataset.id])) par.after(c); else par.before(c);
-    });
-    prev=g;
-  });
+    novos.forEach(([y])=>feitos.add(y));
+  }
+  for(const y of N) if(!info[y]) info[y]={rot:'Ligado(a) à família',det:'',sangue:false,nivel:99,cat:{t:SS,o:2e6}};
+  // geração de cada um (a pessoa aberta = 0)
+  const gen=new Map([[foco,0]]), fila=[foco];
+  for(let i=0;i<fila.length;i++){const x=fila[i], g=gen.get(x);
+    for(const y of arvPais(x)) if(N.has(y)&&!gen.has(y)){gen.set(y,g-1); fila.push(y)}
+    for(const y of f[x]||[]) if(N.has(y)&&!gen.has(y)){gen.set(y,g+1); fila.push(y)}}
+  // uniões: cada par pai+mãe (ou só um) com os filhos que tiveram
+  const U=new Map(), uDe={}, uPais={};
+  for(const c of N){
+    const q=PESSOAS[c], ps=arvPais(c).filter(p=>N.has(p)); if(!ps.length) continue;
+    const k=(N.has(q.pai_id)&&q.pai_id!==c?q.pai_id:'')+'|'+(N.has(q.mae_id)&&q.mae_id!==c?q.mae_id:'');
+    if(!U.has(k)){U.set(k,{k,pais:ps,filhos:[]}); for(const p of ps)(uPais[p]||(uPais[p]=[])).push(k)}
+    U.get(k).filhos.push(c); uDe[c]=k;
+  }
+  for(const u of U.values()) u.filhos.sort((a,b)=>arvNasc(a)-arvNasc(b));
+  // linha direta: ancestrais + a pessoa + descendentes dela
+  const D=new Set(la.keys()); {const st=[foco]; while(st.length){const x=st.pop(); D.add(x); for(const c of f[x]||[]) if(!D.has(c)) st.push(c)}}
+  const M={foco,C,S,N,info,gen,U,uDe,uPais,D,
+    nSangue:S.size, nTudo:null};
+  return M;
 }
-function linhas(){
-  const arv=$('#arv'),svg=arv.querySelector('svg');if(!svg)return;
-  const base=arv.getBoundingClientRect();
-  svg.setAttribute('width',arv.scrollWidth);svg.setAttribute('height',arv.scrollHeight);
-  const pos={};arv.querySelectorAll('.pc').forEach(c=>{const r=c.getBoundingClientRect();pos[c.dataset.id]={x:r.left-base.left+arv.scrollLeft+r.width/2,t:r.top-base.top+arv.scrollTop,b:r.top-base.top+arv.scrollTop+r.height,main:c.classList.contains('main'),side:c.classList.contains('side')}});
-  let s='',rot='';
-  // Etiquetas de idade: ficam coladas no TOPO do filho, centradas nele — a do pai numa altura,
-  // a da mãe logo abaixo. Filhos vizinhos estão a 144px um do outro e cada etiqueta tem ~85px,
-  // então nenhuma encosta na outra, e nenhuma sobe até o card dos pais.
-  for(const id in pos){const q=PESSOAS[id];
-    const doisPais=pos[q.pai_id]&&pos[q.mae_id];
-    [[q.pai_id,'pai'],[q.mae_id,'mae']].forEach(([pid,lado])=>{
-    const a=pos[pid],b=pos[id];if(!a||!b)return;
-    const strong=b.main||a.main||(!b.side&&!a.side);
-    const my=(a.b+b.t)/2;
-    s+=`<path d="M${a.x},${a.b} C${a.x},${my} ${b.x},${my} ${b.x},${b.t}" fill="none" stroke="${strong?'#7b8cff':'rgba(160,170,255,.28)'}" stroke-width="${strong?1.6:1}" opacity="${strong?.9:.7}"/>`;
-    // A idade do pai/mãe quando ESTE filho nasceu, numa pílula com fundo próprio.
-    // (Antes o texto levava um contorno escuro por cima que comia as letras: "Pa1to acs 18".)
-    const n=anosEntre(PESSOAS[pid]?.data_nascimento,q.data_nascimento);
-    if(n!==null&&strong){
-      const txt=(lado==='mae'?'Parto aos ':'Pai aos ')+n, w=Math.round(txt.length*6.2)+16;
-      const cor=lado==='mae'?'#3fd8c2':'#9aa8ff';
-      const cy=b.t-(doisPais&&lado==='pai'?33:13);
-      rot+=`<g><rect x="${b.x-w/2}" y="${cy-9.5}" width="${w}" height="19" rx="9.5" fill="#12131f" stroke="${cor}" stroke-opacity=".45"/>
-        <text x="${b.x}" y="${cy+3.8}" text-anchor="middle" font-size="11" font-weight="600"
-        font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="${cor}">${txt}</text></g>`;
-    }})}
-  svg.innerHTML=s+rot;
+function arvContaTudo(foco){ // tamanho do "tudo conectado" sem montar o desenho
+  const f=arvIdx(), N=new Set([foco]), st=[foco];
+  while(st.length){const x=st.pop(); for(const y of [...arvPais(x),...(f[x]||[])]) if(!N.has(y)){N.add(y); st.push(y)}}
+  return N.size;
+}
+function arvCaminho(M,b){ // pessoas no caminho da ficha aberta até B
+  const a=M.foco; if(a===b) return [a];
+  const I=M.info[b];
+  if(I&&I.sangue&&I.x){
+    const sobe=(de,ate)=>{const prev=new Map([[de,null]]), fila=[de];
+      for(let i=0;i<fila.length;i++){const x=fila[i]; if(x===ate)break; for(const y of arvPais(x)) if(!prev.has(y)){prev.set(y,x); fila.push(y)}}
+      const r=[]; for(let x=ate;x!=null;x=prev.get(x)) r.push(x); return r.reverse()};
+    const up=sobe(a,I.x), down=sobe(b,I.x).reverse();
+    return [...up,...down.slice(1)];
+  }
+  const f=arvIdx(), prev=new Map([[a,null]]), fila=[a];
+  for(let i=0;i<fila.length;i++){const x=fila[i]; if(x===b)break;
+    for(const y of [...arvPais(x),...(f[x]||[])]) if(M.N.has(y)&&!prev.has(y)){prev.set(y,x); fila.push(y)}}
+  if(!prev.has(b)) return [a,b];
+  const r=[]; for(let x=b;x!=null;x=prev.get(x)) r.push(x); return r.reverse();
+}
+
+// ---------------------------------------------------------------- desenho (camadas + barras)
+const AV={W:138,H:182,WM:170,HM:204,CASAL:12,IRM:20,FAM:48,MARG:36,TOPO:30};
+function arvLayout(M){
+  const W=id=>id===M.foco?AV.WM:AV.W, H=id=>id===M.foco?AV.HM:AV.H;
+  const gens=[...new Set(M.gen.values())].sort((a,b)=>a-b);
+  const X=new Map();
+  // ordem inicial: descendo a partir dos ancestrais do topo (lado do pai primeiro), filhos por nascimento
+  const ordem=new Map(); let k=0;
+  const topos=[], vt=new Set();
+  (function sobe(x){if(vt.has(x))return; vt.add(x); const ps=arvPais(x).filter(p=>M.N.has(p)); if(!ps.length){topos.push(x);return} ps.forEach(sobe)})(M.foco);
+  const resto=[...M.N].filter(id=>!arvPais(id).some(p=>M.N.has(p))&&!topos.includes(id)).sort((a,b)=>M.gen.get(a)-M.gen.get(b));
+  const visita=x=>{if(ordem.has(x))return; ordem.set(x,k++);
+    for(const uk of (M.uPais[x]||[]).slice().sort((a,b)=>arvNasc(M.U.get(a).filhos[0])-arvNasc(M.U.get(b).filhos[0]))){
+      const u=M.U.get(uk); for(const p of u.pais) if(p!==x&&!ordem.has(p)) ordem.set(p,k++);
+      for(const c of u.filhos) visita(c);
+      for(const p of u.pais) if(p!==x) visita(p);
+    }};
+  [...topos,...resto].forEach(visita); [...M.N].forEach(visita);
+  // linhas (gerações) e grupos colados (quem teve filho junto, na mesma linha)
+  const linhas=gens.map(g=>[...M.N].filter(id=>M.gen.get(id)===g).sort((a,b)=>ordem.get(a)-ordem.get(b)));
+  const parc={}; for(const u of M.U.values()) if(u.pais.length===2&&M.gen.get(u.pais[0])===M.gen.get(u.pais[1])){
+    const [a,b]=u.pais; (parc[a]||(parc[a]=new Set())).add(b); (parc[b]||(parc[b]=new Set())).add(a)}
+  let rows=linhas.map(l=>{const vis=new Set(), cls=[];
+    for(const id of l){if(vis.has(id))continue; const cl=[], st=[id]; while(st.length){const x=st.pop(); if(vis.has(x))continue; vis.add(x); cl.push(x); for(const y of parc[x]||[]) st.push(y)}
+      cls.push(cl)} return cls});
+  // alvos: centro dos pais (para os filhos) e centro dos filhos (para os pais)
+  const tP=id=>{const ps=arvPais(id).filter(p=>X.has(p)); return ps.length?ps.reduce((s,p)=>s+X.get(p),0)/ps.length:null};
+  const tC=id=>{let s=0,n=0; for(const uk of M.uPais[id]||[]){const u=M.U.get(uk); const fs=u.filhos.filter(c=>X.has(c)); if(!fs.length)continue;
+      s+=fs.reduce((a,c)=>a+X.get(c),0)/fs.length+(X.get(id)-u.pais.reduce((a,p)=>a+X.get(p),0)/u.pais.length); n++} return n?s/n:null};
+  const irmaos=(a,b)=>M.uDe[a]&&M.uDe[a]===M.uDe[b];
+  const meioIrm=(a,b)=>{const pa=arvPais(a),pb=arvPais(b); return pa.some(p=>pb.includes(p))};
+  const gapEntre=(A,B)=>{for(const a of A)for(const b of B) if(irmaos(a,b)) return AV.IRM;
+    for(const a of A)for(const b of B) if(meioIrm(a,b)) return AV.IRM+10; return AV.FAM};
+  const arrumar=cl=>{ // dentro do grupo: quem tem pais no desenho fica do lado da família dele; o parceiro vai pra fora
+    if(cl.length<2) return cl;
+    const tp=new Map(cl.map(id=>[id,tP(id)]));
+    const com=cl.filter(id=>tp.get(id)!==null).sort((a,b)=>tp.get(a)-tp.get(b));
+    const sem=cl.filter(id=>tp.get(id)===null);
+    if(!com.length) return cl.slice().sort((a,b)=>(fem(PESSOAS[a])-fem(PESSOAS[b]))||((X.get(a)||0)-(X.get(b)||0)));
+    const r=com.slice();
+    for(const s of sem.sort((a,b)=>(X.get(a)||0)-(X.get(b)||0))){
+      const p=r.find(i=>parc[s]&&parc[s].has(i)); if(!p){r.push(s); continue}
+      const i=r.indexOf(p), dir=(X.has(p)&&tp.get(p)!==null&&tp.get(p)!==undefined)?X.get(p)>=tp.get(p):!fem(PESSOAS[s]);
+      const ocupado=dir?(r[i+1]&&parc[p]&&parc[p].has(r[i+1])):(r[i-1]&&parc[p]&&parc[p].has(r[i-1]));
+      const vaiDir=ocupado?!dir:dir; r.splice(vaiDir?i+1:i,0,s);
+    }
+    return r;
+  };
+  const pav=(des,wts,larg,gaps)=>{const n=des.length, off=[0]; for(let i=1;i<n;i++) off[i]=off[i-1]+larg[i-1]+gaps[i-1];
+    const st=[]; for(let i=0;i<n;i++){let b={v:des[i]-off[i],w:wts[i],n:1};
+      while(st.length&&st[st.length-1].v>b.v){const a=st.pop(); b={v:(a.v*a.w+b.v*b.w)/(a.w+b.w),w:a.w+b.w,n:a.n+b.n}} st.push(b)}
+    const out=[]; let i=0; for(const b of st) for(let j=0;j<b.n;j++,i++) out.push(b.v+off[i]); return out};
+  const passo=row=>{const larg=[],des=[],wts=[],gaps=[];
+    row.forEach((cl,i)=>{let o=0; const offs=[]; cl.forEach((id,j)=>{if(j)o+=AV.CASAL; offs.push(o+W(id)/2); o+=W(id)});
+      larg.push(o); cl._o=offs; let s=0,w=0;
+      cl.forEach((id,j)=>{const p=tP(id),c=tC(id); const t=p!==null&&c!==null?(p+c)/2:p!==null?p:c; if(t!==null){s+=t-offs[j]; w++}});
+      des.push(w?s/w:X.get(cl[0])-offs[0]); wts.push(w||.15); if(i) gaps.push(gapEntre(row[i-1],cl))});
+    const L=pav(des,wts,larg,gaps); row.forEach((cl,i)=>cl.forEach((id,j)=>X.set(id,L[i]+cl._o[j])))};
+  const empacota=()=>rows.forEach(row=>{let x=0; row.forEach((cl,i)=>{if(i)x+=gapEntre(row[i-1],cl); cl.forEach((id,j)=>{if(j)x+=AV.CASAL; X.set(id,x+W(id)/2); x+=W(id)})})});
+  const relaxa=n=>{for(let it=0;it<n;it++){for(const r of rows) passo(r); for(let i=rows.length-1;i>=0;i--) passo(rows[i])}};
+  const reordena=(row,usa)=>{
+    row.forEach((cl,i)=>{cl.splice(0,cl.length,...arrumar(cl)); let s=0,n=0;
+      cl.forEach(id=>{const t=usa==='P'?tP(id):tC(id); if(t!==null){s+=t; n++}});
+      cl._k=n?s/n:cl.reduce((a,id)=>a+X.get(id),0)/cl.length;
+      cl._n=Math.min(...cl.map(arvNasc)); cl._x=cl.reduce((a,id)=>a+X.get(id),0)/cl.length});
+    row.sort((a,b)=>Math.abs(a._k-b._k)>.5?a._k-b._k:(a._n-b._n)||(a._x-b._x));
+  };
+  const cruzamentos=()=>{let c=0,len=0;
+    for(const u of M.U.values()){const ps=u.pais.filter(p=>X.has(p)); if(!ps.length)continue; const ux=ps.reduce((a,p)=>a+X.get(p),0)/ps.length;
+      for(const c1 of u.filhos) len+=Math.abs(X.get(c1)-ux)}
+    const ar=[]; for(const u of M.U.values()){const ps=u.pais; const ux=ps.reduce((a,p)=>a+X.get(p),0)/ps.length; const g=M.gen.get(u.filhos[0]);
+      for(const c1 of u.filhos) ar.push([g,ux,X.get(c1)])}
+    for(let i=0;i<ar.length;i++)for(let j=i+1;j<ar.length;j++){const a=ar[i],b=ar[j]; if(a[0]===b[0]&&(a[1]-b[1])*(a[2]-b[2])<-1e-6) c++}
+    return c*100000+len};
+  empacota(); rows.forEach(r=>r.forEach(cl=>cl.splice(0,cl.length,...arrumar(cl)))); relaxa(6);
+  let melhor=null, nota=Infinity;
+  const guarda=()=>{const n=cruzamentos(); if(n<nota){nota=n; melhor=rows.map(r=>r.map(cl=>cl.slice()))}};
+  guarda();
+  for(let it=0;it<8;it++){
+    for(let i=1;i<rows.length;i++) reordena(rows[i],'P');
+    empacota(); relaxa(5); guarda();
+    for(let i=rows.length-2;i>=0;i--) reordena(rows[i],'C');
+    empacota(); relaxa(5); guarda();
+  }
+  rows=melhor; empacota(); rows.forEach(r=>r.forEach(cl=>cl.splice(0,cl.length,...arrumar(cl)))); empacota(); relaxa(40);
+  // y: cada geração numa linha; o vão entre linhas cresce com o nº de barras que precisam passar ali
+  let minX=Infinity,maxX=-Infinity; for(const [id,x] of X){minX=Math.min(minX,x-W(id)/2); maxX=Math.max(maxX,x+W(id)/2)}
+  const dx=AV.MARG-minX; for(const [id,x] of X) X.set(id,x+dx);
+  const idades=id=>{if(!(ARV.idades?M.S.has(id):M.D.has(id))) return []; const q=PESSOAS[id];
+    return arvPais(id).filter(p=>M.N.has(p)).map(p=>[p,anosEntre(PESSOAS[p].data_nascimento,q.data_nascimento)]).filter(a=>a[1]!==null)};
+  const Y=new Map(), rowsY=[]; let y=AV.TOPO; const lanes={};
+  rows.forEach((row,ri)=>{
+    const ids=row.flat(), h=Math.max(...ids.map(H));
+    if(ri>0){
+      const g=gens[ri]; const us=[...M.U.values()].filter(u=>M.gen.get(u.filhos[0])===g)
+        .map(u=>{const ps=u.pais.filter(p=>X.has(p)); const ux=ps.reduce((a,p)=>a+X.get(p),0)/ps.length;
+          const xs=[ux,...u.filhos.map(c=>X.get(c)),...ps.map(p=>X.get(p))]; return {u,l:Math.min(...xs),r:Math.max(...xs)}})
+        .sort((a,b)=>a.l-b.l);
+      const fim=[]; for(const it of us){let L=fim.findIndex(r=>r<it.l-10); if(L<0){L=fim.length; fim.push(0)} fim[L]=it.r; lanes[it.u.k]=L}
+      const temIdade=ids.some(id=>idades(id).length);
+      const gap=26+Math.max(0,fim.length-1)*9+(temIdade?(ids.some(id=>idades(id).length>1)?58:38):30);
+      rowsY[ri-1].gap=gap; rowsY[ri-1].nl=fim.length; y+=gap;
+    }
+    rowsY.push({g:gens[ri],y,h}); ids.forEach(id=>Y.set(id,y)); y+=h;
+  });
+  const largura=maxX-minX+AV.MARG*2, altura=y+AV.MARG;
+  // linhas (SVG)
+  let svg='', sobre='', pills='';
+  const R=9;
+  const pos=id=>({x:X.get(id),y:Y.get(id),w:W(id),h:H(id)});
+  for(const u of M.U.values()){
+    const ps=u.pais.filter(p=>X.has(p)); if(!ps.length) continue;
+    const ri=gens.indexOf(M.gen.get(u.filhos[0])); if(ri<1) continue;
+    const ry=rowsY[ri-1], barY=ry.y+ry.h+22+(lanes[u.k]||0)*9;
+    const direta=u.filhos.some(c=>M.D.has(c))&&ps.every(p=>M.D.has(p));
+    const semSangue=!u.filhos.some(c=>M.S.has(c));
+    const cls=direta?'dir':semSangue?'ss':'sg';
+    let d='', ux;
+    const pp=ps.map(pos).sort((a,b)=>a.x-b.x);
+    const colados=ps.length===2&&pp[0].y===pp[1].y&&Math.abs((pp[1].x-pp[1].w/2)-(pp[0].x+pp[0].w/2)-AV.CASAL)<1;
+    if(colados){const yc=pp[0].y+44; ux=(pp[0].x+pp[0].w/2+pp[1].x-pp[1].w/2)/2;
+      d+=`<path class="cl" d="M${pp[0].x+pp[0].w/2},${yc} H${pp[1].x-pp[1].w/2}"/>`;
+      d+=`<path class="ud" d="M${ux},${yc} V${barY}"/>`}
+    else if(pp.length===2){ux=(pp[0].x+pp[1].x)/2;
+      pp.forEach((a,i)=>{d+=`<path class="ud pd" data-p="${esc(ps.find(p=>X.get(p)===a.x)||'')}" d="M${a.x},${a.y+a.h} V${barY-R} Q${a.x},${barY} ${a.x+(i?-R:R)},${barY} H${ux}"/>`})}
+    else{const a=pp[0]; ux=a.x; d+=`<path class="ud" d="M${a.x},${a.y+a.h} V${barY}"/>`}
+    for(const c of u.filhos){const b=pos(c); if(b.x===undefined)continue; const s=Math.sign(b.x-ux), top=b.y;
+      const dc=Math.abs(b.x-ux)<R+1?`M${ux},${barY} H${b.x} V${top}`:`M${ux},${barY} H${b.x-s*R} Q${b.x},${barY} ${b.x},${barY+R} V${top}`;
+      d+=`<path class="cd ${M.D.has(c)&&direta?'dir':''}" data-c="${esc(c)}" d="${dc}"/>`;
+      idades(c).forEach(([p,n],i,arr)=>{const mae=fem(PESSOAS[p]); const txt=(mae?'Parto aos ':'Pai aos ')+n, w=Math.round(txt.length*6.1)+16;
+        const cy=top-13-(arr.length>1&&!mae?20:0), cor=mae?'#3fd8c2':'#9aa8ff';
+        pills+=`<g class="pl"><rect x="${b.x-w/2}" y="${cy-9.5}" width="${w}" height="19" rx="9.5" fill="#12131f" stroke="${cor}" stroke-opacity=".5"/><text x="${b.x}" y="${cy+3.8}" text-anchor="middle" fill="${cor}">${txt}</text></g>`})}
+    const gtag=`<g class="u ${cls}" data-u="${esc(u.k)}">${d}</g>`;
+    if(cls==='dir') sobre+=gtag; else svg+=gtag;
+  }
+  return {X,Y,W,H,rows,rowsY,gens,largura,altura,svg:svg+sobre+pills};
+}
+
+// ---------------------------------------------------------------- tela
+function arvCard(M,L,id){
+  const q=PESSOAS[id], I=M.info[id]||{}, x=L.X.get(id), y=L.Y.get(id), w=L.W(id), h=L.H(id);
+  const cls=['av-c',id===M.foco?'main':'',M.D.has(id)&&id!==M.foco?'dir':'',I.sangue?'':'ss',q.esqueleto?'esq':''].filter(Boolean).join(' ');
+  const idade=q.idade!==null&&q.idade!==undefined&&q.idade!==''?(q.falecido?`faria ${q.idade}`:`${q.idade} anos`):'';
+  const sub=[ano(q),idade].filter(Boolean).join(' · ')||(q.esqueleto?'sem dados':'');
+  return `<div class="${cls}" data-id="${esc(id)}" style="left:${Math.round(x-w/2)}px;top:${Math.round(y)}px;width:${w}px;height:${h}px">
+    ${foto(q,'av-f')}${q.falecido?'<span class="av-x" title="falecido(a)">✝</span>':''}
+    <div class="av-n">${esc(arvNome(q))}</div>
+    <div class="av-r">${id===M.foco?'ficha aberta':esc(I.rot||'')}</div>
+    ${I.det?`<div class="av-d">${esc(I.det)}</div>`:''}
+    <div class="av-a">${esc(sub)}</div></div>`;
+}
+const AV_GEN=g=>g<0?(['','Geração dos pais','Geração dos avós','Geração dos bisavós','Geração dos trisavós','Geração dos tataravós'][-g]||`${-g} gerações acima`)
+  :g>0?(['','Geração dos filhos','Geração dos netos','Geração dos bisnetos'][g]||`${g} gerações abaixo`):'Geração dele(a)';
+
+function arvDesenhar(foco,alvo){
+  alvo=alvo||$('#arv-wrap'); if(!alvo||!PESSOAS[foco]) return;
+  ARV._de=null;   // índice refeito a cada desenho: a ficha pode ter mudado no lugar
+  document.querySelectorAll('body > .avw').forEach(a=>{if(a._alvo===alvo)a.remove()});   // a versão em tela cheia que vai ser trocada
+  const M=arvModelo(foco,ARV.modo), nTudo=arvContaTudo(foco);
+  const nSs=M.N.size-M.S.size;
+  const gens=[...new Set(M.gen.values())];
+  const resumo=`<b>${M.N.size-1}</b> ${M.N.size===2?'pessoa ligada':'pessoas ligadas'} a ${esc(arvPrim(foco))} · <b>${M.S.size-1}</b> de sangue${nSs?` · <b>${nSs}</b> ${ARV.modo==='tudo'?'sem sangue':'pai/mãe de parente (sem sangue)'}`:''} · <b>${gens.length}</b> ${gens.length===1?'geração':'gerações'}`;
+  const seg=(k,v,r)=>`<button class="${ARV[k]===v?'on':''}" data-${k}="${v}">${r}</button>`;
+  alvo.innerHTML=`<div class="avw ${arvToque()?'toque':''}" data-foco="${esc(foco)}">
+    <div class="av-tit">🌳 Árvore de ${esc(arvNome(PESSOAS[foco]))}</div>
+    <div class="av-bar">
+      <div class="av-seg">${seg('vista','arvore','🌳 Árvore')}${seg('vista','lista','☰ Lista')}</div>
+      <div class="av-seg">${seg('modo','tudo',`Tudo conectado <i>${nTudo-1}</i>`)}${seg('modo','sangue',`Só sangue <i>${M.S.size-1}</i>`)}</div>
+      ${ARV.vista==='arvore'?`<label class="av-tg"><input type="checkbox" ${ARV.idades?'checked':''} data-idades="1"> idade dos pais em todos</label>`:''}
+      <button class="av-cheia-bt" data-acao="cheia" title="tela cheia">⛶ <span>Tela cheia</span></button>
+    </div>
+    <div class="av-resumo">${resumo}</div>
+    ${M.N.size<2?`<div class="av-vazio">Ninguém ligado a ${esc(arvPrim(foco))} ainda. Use <b>＋ Pai</b>, <b>＋ Mãe</b> ou <b>＋ Filho(a)</b> para começar a árvore.</div>`
+      :ARV.vista==='lista'?arvLista(M):`<div class="av-vp"><div class="av-palco"></div><div class="av-gens"></div>
+        <div class="av-ctl"><button data-acao="mais" title="aproximar">＋</button><button data-acao="menos" title="afastar">−</button>
+          <button data-acao="tudo" title="ver a árvore inteira">⤢</button><button data-acao="foco" title="voltar para ${esc(arvPrim(foco))}">◎</button></div>
+        <div class="av-cam"></div><div class="av-sheet"></div></div>
+      <div class="legenda av-leg"><span><i class="m"></i>ficha aberta</span><span><i class="dl"></i>linha direta (ascendentes e descendentes)</span><span><i></i>parente de sangue</span><span><i class="s"></i>ligado sem sangue</span><span><i class="d"></i>esqueleto</span><span style="color:#3fd8c2">◆ etiqueta = idade do pai/mãe quando o filho nasceu</span></div>`}
+  </div>`;
+  const av=alvo.querySelector('.avw'); av._alvo=alvo;
+  av.addEventListener('click',e=>{
+    const b=e.target.closest('[data-vista],[data-modo]'); if(b){
+      if(b.dataset.vista){ARV.vista=b.dataset.vista} if(b.dataset.modo){ARV.modo=b.dataset.modo}
+      arvPref(); const cheia=av.classList.contains('cheia'); arvDesenhar(foco,alvo); if(cheia) arvTelaCheia(alvo.querySelector('.avw'),true); return}
+    const a=e.target.closest('[data-acao]'); if(a&&a.dataset.acao==='cheia'){arvTelaCheia(av,!av.classList.contains('cheia')); return}
+  });
+  const tg=av.querySelector('[data-idades]'); if(tg) tg.onchange=()=>{ARV.idades=tg.checked; arvPref(); const cheia=av.classList.contains('cheia'); arvDesenhar(foco,alvo); if(cheia) arvTelaCheia(alvo.querySelector('.avw'),true)};
+  const fl=av.querySelector('.av-filtro'); if(fl) fl.oninput=()=>{const q=norm(fl.value);
+    av.querySelectorAll('.av-li').forEach(li=>li.style.display=!q||norm(li.dataset.n).includes(q)?'':'none');
+    av.querySelectorAll('.av-lg').forEach(g=>g.style.display=[...g.querySelectorAll('.av-li')].some(li=>li.style.display!=='none')?'':'none')};
+  if(ARV.vista!=='arvore'||M.N.size<2) return;
+  const L=arvLayout(M);
+  const vp=av.querySelector('.av-vp'), palco=av.querySelector('.av-palco');
+  palco.style.width=L.largura+'px'; palco.style.height=L.altura+'px';
+  palco.innerHTML=`<svg width="${L.largura}" height="${L.altura}" viewBox="0 0 ${L.largura} ${L.altura}">${L.svg}</svg>`+[...M.N].map(id=>arvCard(M,L,id)).join('');
+  av.querySelector('.av-gens').innerHTML=L.rowsY.map(r=>`<span data-y="${r.y}">${esc(r.g===0?'Geração de '+arvPrim(foco):AV_GEN(r.g))}</span>`).join('');
+  arvVista(av,vp,palco,M,L);
+}
+
+function arvLista(M){
+  const grupos=new Map();
+  for(const id of M.N){if(id===M.foco)continue; const I=M.info[id]; const c=I.cat||{t:'Outros',o:9e6};
+    (grupos.get(c.t)||grupos.set(c.t,{o:c.o,ids:[]}).get(c.t)).ids.push(id)}
+  const gs=[...grupos.entries()].sort((a,b)=>a[1].o-b[1].o||a[0].localeCompare(b[0]));
+  const li=id=>{const q=PESSOAS[id], I=M.info[id];
+    const idade=q.idade!==null&&q.idade!==undefined&&q.idade!==''?(q.falecido?`faria ${q.idade}`:`${q.idade} anos`):'';
+    return `<a class="av-li ${I.sangue?'':'ss'} ${q.esqueleto?'esq':''}" href="#/p/${esc(id)}" data-n="${esc(q.nome+' '+(I.rot||''))}">${foto(q,'av-lf')}
+      <span class="av-lt"><b>${esc(arvNome(q))}${q.falecido?' <span class="mut">✝</span>':''}</b><small><em>${esc(I.rot||'')}</em>${I.det?' · '+esc(I.det):''}${idade?' · '+idade:''}</small></span><span class="av-li-s">›</span></a>`};
+  return `<input class="av-filtro" placeholder="procurar nesta família…" autocomplete="off">
+    <div class="av-lista">${gs.map(([t,g])=>`<div class="av-lg"><h4>${esc(t)} <span class="n">${g.ids.length}</span></h4>
+      <div class="av-lc">${g.ids.sort((a,b)=>arvNasc(a)-arvNasc(b)).map(li).join('')}</div></div>`).join('')}</div>`;
+}
+
+function arvTelaCheia(av,on){
+  // vai para o <body> enquanto estiver em tela cheia: dentro do painel, um pai com efeito visual prenderia o "fixed"
+  if(on&&!av._volta){av._volta=document.createComment('arvore'); av.replaceWith(av._volta); document.body.appendChild(av)}
+  if(!on&&av._volta){av._volta.replaceWith(av); av._volta=null}
+  const vp=av.querySelector('.av-vp');
+  // o ponto da árvore que está no meio da tela continua no meio depois de abrir/fechar a tela cheia
+  const meio=vp&&vp._st?{x:(vp.clientWidth/2-vp._st.x)/vp._st.s,y:(vp.clientHeight/2-vp._st.y)/vp._st.s}:null;
+  av.classList.toggle('cheia',on); document.documentElement.classList.toggle('av-trava',on);
+  const b=av.querySelector('.av-cheia-bt'); if(b) b.innerHTML=on?'✕ <span>Fechar</span>':'⛶ <span>Tela cheia</span>';
+  if(vp&&vp._mira&&meio) requestAnimationFrame(()=>vp._mira(meio));
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const a=document.querySelector('.avw.cheia'); if(a) arvTelaCheia(a,false)}});
+window.addEventListener('hashchange',()=>{document.documentElement.classList.remove('av-trava'); document.querySelectorAll('body > .avw').forEach(a=>a.remove())});
+
+// ---------------------------------------------------------------- arrastar, pinça e zoom
+function arvVista(av,vp,palco,M,L){
+  const st={s:1,x:0,y:0}, toque=arvToque();
+  const gens=av.querySelector('.av-gens');
+  const aplica=()=>{palco.style.transform=`translate(${st.x}px,${st.y}px) scale(${st.s})`;
+    gens.querySelectorAll('span').forEach(s=>{s.style.transform=`translateY(${Math.round(+s.dataset.y*st.s+st.y-21)}px)`})};
+  const limita=()=>{st.s=Math.min(2.2,Math.max(.12,st.s)); const vw=vp.clientWidth, vh=vp.clientHeight, w=L.largura*st.s, h=L.altura*st.s;
+    st.x=w<vw?(vw-w)/2:Math.min(60,Math.max(vw-w-60,st.x)); st.y=h<vh?(vh-h)/2:Math.min(60,Math.max(vh-h-60,st.y))};
+  const zoomEm=(f,cx,cy)=>{const s0=st.s; st.s=Math.min(2.2,Math.max(.12,st.s*f)); const k=st.s/s0; st.x=cx-(cx-st.x)*k; st.y=cy-(cy-st.y)*k; limita(); aplica()};
+  const centra=(id,s)=>{if(s)st.s=s; const x=L.X.get(id), y=L.Y.get(id)+L.H(id)/2; st.x=vp.clientWidth/2-x*st.s; st.y=vp.clientHeight/2-y*st.s; limita(); aplica()};
+  const cabe=()=>Math.min(vp.clientWidth/L.largura, vp.clientHeight/L.altura);
+  vp._ajusta=()=>{const f=cabe();
+    if(f>=(toque?.62:.72)){st.s=Math.min(1,f); st.x=0; st.y=0; limita(); aplica()}
+    else centra(M.foco,toque?.6:.8)};
+  // altura da janela da árvore: no Mac acompanha o tamanho da árvore; no celular, o quanto cabe na tela
+  if(!toque) vp.style.height=Math.round(Math.min(Math.max(440,L.altura*Math.min(1,Math.max(.72,cabeLarg()))+20),window.innerHeight*.8))+'px';
+  function cabeLarg(){return vp.clientWidth/L.largura}
+  vp._ajusta('normal'); vp._st=st;
+  vp._mira=m=>{st.x=vp.clientWidth/2-m.x*st.s; st.y=vp.clientHeight/2-m.y*st.s; limita(); aplica()};
+  // ponteiros: 1 dedo/mouse arrasta, 2 dedos = pinça
+  const pts=new Map(); let ini=null, pinca=null; ARV.arrastou=false;
+  vp.addEventListener('pointerdown',e=>{if(e.target.closest('.av-ctl,.av-sheet'))return; if(e.pointerType==='mouse'&&e.button!==0)return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===1){ini={x:e.clientX,y:e.clientY,sx:st.x,sy:st.y}; ARV.arrastou=false}
+    if(pts.size===2){const [a,b]=[...pts.values()]; const r=vp.getBoundingClientRect();
+      pinca={d:Math.hypot(a.x-b.x,a.y-b.y),s:st.s,mx:(a.x+b.x)/2-r.left,my:(a.y+b.y)/2-r.top,x:st.x,y:st.y}; ARV.arrastou=true}
+  });
+  const move=e=>{if(!pts.has(e.pointerId))return; pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinca&&pts.size>=2){const [a,b]=[...pts.values()]; const r=vp.getBoundingClientRect();
+      const d=Math.hypot(a.x-b.x,a.y-b.y), mx=(a.x+b.x)/2-r.left, my=(a.y+b.y)/2-r.top;
+      st.s=Math.min(2.2,Math.max(.12,pinca.s*d/pinca.d)); const px=(pinca.mx-pinca.x)/pinca.s, py=(pinca.my-pinca.y)/pinca.s;
+      st.x=mx-px*st.s; st.y=my-py*st.s; limita(); aplica(); return}
+    if(ini){const dx=e.clientX-ini.x, dy=e.clientY-ini.y; if(Math.abs(dx)+Math.abs(dy)>6){ARV.arrastou=true; vp.classList.add('arrastando')}
+      if(ARV.arrastou){st.x=ini.sx+dx; st.y=ini.sy+dy; limita(); aplica()}}};
+  const solta=e=>{if(!pts.has(e.pointerId))return; pts.delete(e.pointerId); if(pts.size<2)pinca=null;
+    if(pts.size===1){const [a]=[...pts.values()]; ini={x:a.x,y:a.y,sx:st.x,sy:st.y}} if(!pts.size){ini=null; vp.classList.remove('arrastando')}};
+  window.addEventListener('pointermove',move); window.addEventListener('pointerup',solta); window.addEventListener('pointercancel',solta);
+  const limpa=new MutationObserver(()=>{if(!document.body.contains(vp)){window.removeEventListener('pointermove',move); window.removeEventListener('pointerup',solta); window.removeEventListener('pointercancel',solta); limpa.disconnect()}});
+  limpa.observe(document.body,{childList:true,subtree:true});
+  vp.addEventListener('wheel',e=>{const r=vp.getBoundingClientRect(), cheia=av.classList.contains('cheia');
+    if(e.ctrlKey||e.metaKey){e.preventDefault(); zoomEm(Math.exp(-e.deltaY*.012),e.clientX-r.left,e.clientY-r.top); return}
+    if(cheia||Math.abs(e.deltaX)>Math.abs(e.deltaY)){e.preventDefault(); st.x-=e.deltaX; st.y-=cheia?e.deltaY:0; limita(); aplica()}},{passive:false});
+  vp.addEventListener('dblclick',e=>{if(e.target.closest('.av-c,.av-ctl,.av-sheet'))return; const r=vp.getBoundingClientRect(); zoomEm(1.6,e.clientX-r.left,e.clientY-r.top)});
+  av.querySelector('.av-ctl').addEventListener('click',e=>{const a=e.target.closest('[data-acao]'); if(!a)return; const w=vp.clientWidth/2,h=vp.clientHeight/2;
+    if(a.dataset.acao==='mais')zoomEm(1.3,w,h); if(a.dataset.acao==='menos')zoomEm(1/1.3,w,h);
+    if(a.dataset.acao==='tudo'){st.s=Math.min(1,cabe()); st.x=0; st.y=0; limita(); aplica()}
+    if(a.dataset.acao==='foco')centra(M.foco,Math.max(st.s,toque?.6:.85))});
+  // caminho até a pessoa: acende os cards e as linhas do caminho
+  const cam=av.querySelector('.av-cam'), sheet=av.querySelector('.av-sheet');
+  const acende=id=>{palco.querySelectorAll('.cam').forEach(x=>x.classList.remove('cam')); palco.classList.toggle('apaga',!!id);
+    if(!id){cam.classList.remove('on'); return []}
+    const c=arvCaminho(M,id);
+    c.forEach(i=>{const el=palco.querySelector(`.av-c[data-id="${CSS.escape(i)}"]`); if(el)el.classList.add('cam')});
+    for(let i=1;i<c.length;i++){const a=c[i-1],b=c[i]; const filho=arvPais(b).includes(a)?b:arvPais(a).includes(b)?a:null; if(!filho)continue;
+      const pai=filho===b?a:b, uk=M.uDe[filho]; if(!uk)continue; const g=palco.querySelector(`g[data-u="${CSS.escape(uk)}"]`); if(!g)continue;
+      g.querySelectorAll('.cl,.ud:not(.pd)').forEach(x=>x.classList.add('cam'));
+      g.querySelectorAll(`.pd[data-p="${CSS.escape(pai)}"],.cd[data-c="${CSS.escape(filho)}"]`).forEach(x=>x.classList.add('cam'))}
+    return c};
+  const chips=c=>c.map((i,n)=>`<span class="${i===M.foco?'f':''}">${esc(arvPrim(i))}${i!==M.foco?` <em>${esc((M.info[i]||{}).rot||'')}</em>`:''}</span>`).join('<i>›</i>');
+  if(!toque){
+    palco.addEventListener('mouseover',e=>{const c=e.target.closest('.av-c'); if(!c||c.dataset.id===M.foco)return; const p=acende(c.dataset.id);
+      cam.innerHTML=`<small>caminho</small>${chips(p)}`; cam.classList.add('on')});
+    palco.addEventListener('mouseout',e=>{const c=e.target.closest('.av-c'); if(c&&!c.contains(e.relatedTarget)) acende(null)});
+  }
+  palco.addEventListener('click',e=>{const c=e.target.closest('.av-c'); if(!c||ARV.arrastou)return; const id=c.dataset.id;
+    if(!toque){location.hash='#/p/'+id; return}
+    if(id===M.foco&&!sheet.classList.contains('on')){return}
+    const p=acende(id), q=PESSOAS[id], I=M.info[id]||{};
+    const idade=q.idade!==null&&q.idade!==undefined&&q.idade!==''?(q.falecido?`faria ${q.idade}`:`${q.idade} anos`):'';
+    sheet.innerHTML=`<button class="av-sx" data-sh="x" aria-label="fechar">✕</button>
+      <div class="av-st">${foto(q,'av-sf')}<div><b>${esc(arvNome(q))}</b><span class="av-sr">${esc(id===M.foco?'ficha aberta':I.rot||'')}</span>
+        <small>${[I.det,q.data_nascimento,idade,I.sangue===false?'sem parentesco de sangue':''].filter(Boolean).map(esc).join(' · ')}</small></div></div>
+      ${p.length>1?`<div class="av-sc">${chips(p)}</div>`:''}
+      <div class="av-sb"><a class="btn p" href="#/p/${esc(id)}">Abrir ficha</a><button class="btn" data-sh="c">◎ Centralizar</button></div>`;
+    sheet.classList.add('on');
+    sheet.onclick=ev=>{const b=ev.target.closest('[data-sh]'); if(!b)return; if(b.dataset.sh==='x'){sheet.classList.remove('on'); acende(null)}
+      if(b.dataset.sh==='c'){centra(id,Math.max(st.s,.7))}
+      if(b.tagName==='A'&&av.classList.contains('cheia')) arvTelaCheia(av,false)};
+    sheet.querySelector('a.btn').addEventListener('click',()=>{if(av.classList.contains('cheia'))arvTelaCheia(av,false)});
+  });
+  new ResizeObserver(()=>{limita(); aplica()}).observe(vp);
 }
 
 // ------------------------------------------------------------ formulário
 let FOTO_B64=null, FORM_ID='', LIGAR_A=null;
+// tipo sanguíneo (01/10/2026): dado que nunca muda — guardado como "O-", mostrado como "O−"
+const TIPOS_SANGUE=['A+','A-','B+','B-','AB+','AB-','O+','O-'];
+function tsTxt(t){return String(t||'').replace('-','−')}
 function abrirForm(id,pre){
   const p=id?Object.assign({},PESSOAS[id]):{id:'',nome:'',cpf:'',data_nascimento:'',sexo:'',pai_id:'',mae_id:'',pai_nome:'',mae_nome:'',telefone:'',email:'',links:[],apelido:'',oficio:'',observacoes:'',fonte:'',fonte_detalhe:'',esqueleto:false,falecido:false,foto:''};
   FORM_ID=id||''; LIGAR_A=null; let contexto='';
@@ -2477,6 +2987,7 @@ function abrirForm(id,pre){
       <option value="terceiro" ${p.fonte==='terceiro'?'selected':''}>👥 Parente/terceiro me contou</option>
       <option value="esqueleto" ${p.fonte==='esqueleto'?'selected':''}>Só citado(a) em outra ficha</option></select></div>
     <div><label>Data de nascimento (DD/MM/AAAA)</label><input id="in_nasc" value="${esc(p.data_nascimento)}" placeholder="DD/MM/AAAA"></div>
+    <div><label>Tipo sanguíneo <span class="mut small">— não muda nunca</span></label><select id="in_ts"><option value="">—</option>${TIPOS_SANGUE.map(t=>`<option value="${t}" ${(p.tipo_sanguineo||'')===t?'selected':''}>${tsTxt(t)}</option>`).join('')}</select></div>
     <div><label>Sexo</label><select id="in_sexo"><option value="">—</option><option ${p.sexo==='Masculino'?'selected':''}>Masculino</option><option ${p.sexo==='Feminino'?'selected':''}>Feminino</option></select></div>
     ${ac('pai','Pai')}${ac('mae','Mãe')}
     <div><label>CPF</label><input id="in_cpf" value="${esc(p.cpf)}" placeholder="000.000.000-00"><div class="msgerro" id="cpf_msg"></div></div>
@@ -2582,7 +3093,7 @@ async function salvar(id){
   const nasc=$('#in_nasc').value.trim();
   if(nasc&&!/^\d{2}\/\d{2}\/\d{4}$/.test(nasc)){toast('Data precisa ser DD/MM/AAAA');return}
   const cm=cpfStatus($('#in_cpf').value);if(cm){toast(cm);return}
-  const body={id:id||'',nome:$('#in_nome').value.trim(),data_nascimento:nasc,sexo:$('#in_sexo').value,fonte:$('#in_fonte').value,ligar_a:LIGAR_A,
+  const body={id:id||'',nome:$('#in_nome').value.trim(),data_nascimento:nasc,sexo:$('#in_sexo').value,tipo_sanguineo:$('#in_ts').value,fonte:$('#in_fonte').value,ligar_a:LIGAR_A,
     pai_id:$('#id_pai').value,mae_id:$('#id_mae').value,novo_pai:$('#novo_pai').value,novo_mae:$('#novo_mae').value,
     pai_nome:$('#id_pai').value||$('#novo_pai').value?'':$('#in_pai').value.trim(),mae_nome:$('#id_mae').value||$('#novo_mae').value?'':$('#in_mae').value.trim(),
     cpf:$('#in_cpf').value.trim(),telefone:$('#in_tel').value.trim(),email:$('#in_email').value.trim(),links:$('#in_links').value.split('\n').map(x=>x.trim()).filter(Boolean).join(' | '),fonte_detalhe:$('#in_fonte_det').value.trim(),endereco:$('#in_end').value.trim(),apelido:$('#in_apelido').value.trim(),oficio:$('#in_oficio').value.trim(),
@@ -2617,10 +3128,10 @@ $('#modal').addEventListener('mousedown',e=>{if(e.target===$('#modal'))fecharFor
 // os dados guardados no próprio aparelho: a BASE (gerada no Mac pelo gerar_pacote.py, com tudo
 // já calculado) + as MUDANÇAS feitas no celular, que ficam na fila até o Mac aplicar.
 const APP_ID = 'pessoas-de-bolso';
-const APP_VERSION = '1.1';
+const APP_VERSION = '1.2';
 const PREVIEW = !!window.PREVIEW_MODE;
 let ID_EU = '';
-const CAMPOS = ['id', 'nome', 'cpf', 'data_nascimento', 'sexo', 'pai_id', 'pai_nome', 'mae_id', 'mae_nome',
+const CAMPOS = ['id', 'nome', 'cpf', 'data_nascimento', 'sexo', 'tipo_sanguineo', 'pai_id', 'pai_nome', 'mae_id', 'mae_nome',
   'apelido', 'telefone', 'email', 'links', 'oficio', 'observacoes', 'fonte', 'fonte_detalhe',
   'esqueleto', 'falecido', 'foto', 'google_fotos', 'endereco', 'local', 'local_data'];
 const BOOLS = new Set(['esqueleto', 'falecido']);
@@ -2813,7 +3324,7 @@ function descreverMudanca(m) {
   const p = PESSOAS[idAtual(m.id)], nome = (p && p.nome) || (m.campos && m.campos.nome) || m.id;
   if (m.tipo === 'foto') return { t: `Foto nova de ${nome}`, s: 'foto' };
   if (m.novo) return { t: `Pessoa nova: ${nome}`, s: 'cadastro' };
-  const ROT = { nome: 'nome', data_nascimento: 'nascimento', sexo: 'sexo', pai_id: 'pai', mae_id: 'mãe', apelido: 'apelido', telefone: 'telefone', email: 'e-mail', links: 'links', oficio: 'ofício', observacoes: 'observações', fonte: 'fonte', fonte_detalhe: 'procedência', esqueleto: 'esqueleto', falecido: 'falecido', endereco: 'endereço', local: 'pino no mapa', cpf: 'CPF', revisar: 'completar depois' };
+  const ROT = { nome: 'nome', data_nascimento: 'nascimento', sexo: 'sexo', pai_id: 'pai', mae_id: 'mãe', apelido: 'apelido', telefone: 'telefone', email: 'e-mail', links: 'links', oficio: 'ofício', observacoes: 'observações', fonte: 'fonte', fonte_detalhe: 'procedência', esqueleto: 'esqueleto', falecido: 'falecido', endereco: 'endereço', local: 'pino no mapa', cpf: 'CPF', revisar: 'completar depois', tipo_sanguineo: 'tipo sanguíneo' };
   const ks = Object.keys(m.campos || {}).filter(k => ROT[k]).map(k => ROT[k]);
   if (m.novo_pai) ks.push('pai novo'); if (m.novo_mae) ks.push('mãe nova'); if (m.ligar_a) ks.push('ligou como ' + (m.ligar_a.lado === 'pai' ? 'pai' : 'mãe'));
   return { t: `${nome}`, s: [...new Set(ks)].join(', ') || 'edição' };
@@ -3504,7 +4015,7 @@ function ligarPinca(el) {
   el.addEventListener('pointerup', fim); el.addEventListener('pointercancel', fim);
 }
 
-// ================================================================ Pessoas de Bolso — feito pro CELULAR (v1.1, 28-09-2026)
+// ================================================================ Pessoas de Bolso — feito pro CELULAR (v1.1, 28-09-2026; árvore v1.2, 01-10-2026)
 // Pedido dele (28-09-2026): "vou ver majoritariamente pelo celular". Então, na tela estreita:
 //   • Aniversários em QUADRADINHOS, 3 por linha: foto, nome, idade que vai fazer, data e em quantos dias;
 //   • cadastro EXPRESSO ligado por padrão (chave do lado esquerdo): só nome, nascimento e foto, e a opção
@@ -3679,7 +4190,7 @@ async function vPessoaCel(id) {
     <div class="fi-ac">${w ? `<a class="btn w" href="${w}" target="_blank" rel="noopener">💬 WhatsApp</a>` : ''}${tel ? `<a class="btn" href="tel:${esc(tel)}">📞 Ligar</a>` : ''}
       <button class="btn p" onclick="abrirForm('${esc(p.id)}')">✏️ Editar</button></div>
     <div class="fi-dd">${dado('Nascimento', esc(p.data_nascimento || ''))}${dado('Apelido', esc(p.apelido || ''))}${dado('Telefone', esc(p.telefone || ''))}
-      ${dado('Ofício', esc(p.oficio || ''))}${dado('E-mail', p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '')}${dado('Sexo', esc(p.sexo || ''))}
+      ${dado('Ofício', esc(p.oficio || ''))}${dado('E-mail', p.email ? `<a href="mailto:${esc(p.email)}">${esc(p.email)}</a>` : '')}${dado('Sexo', esc(p.sexo || ''))}${dado('Tipo sanguíneo', esc(tsTxt(p.tipo_sanguineo)))}
       ${dado('Endereço', esc(p.endereco || ''))}${dado('CPF', esc(p.cpf || ''))}${dado('Pai', pai)}${dado('Mãe', mae)}</div>
     ${LK}
     ${p.observacoes ? `<div class="obs">${esc(p.observacoes).replace(/\n/g, '<br>')}</div>` : ''}
@@ -3689,15 +4200,15 @@ async function vPessoaCel(id) {
         ${(p.pai_id || p.mae_id) ? `<button onclick="abrirForm(null,{irmaoDe:'${esc(p.id)}'})">＋ irmão(ã)</button>` : ''}
         ${!p.pai_id ? `<button onclick="abrirForm(null,{paiDe:'${esc(p.id)}',lado:'pai'})">＋ pai</button>` : ''}
         ${!p.mae_id ? `<button onclick="abrirForm(null,{paiDe:'${esc(p.id)}',lado:'mae'})">＋ mãe</button>` : ''}</div></div>
-    <details class="fi-det" id="det-arv"><summary>🌳 Árvore genealógica</summary>
-      <label class="chk" style="margin:8px 0"><input type="checkbox" id="lat" onchange="desenharArvore()"> mostrar tios, primos, sobrinhos</label>
-      <div class="arv" id="arv"></div></details>
+    <div class="cel-sec fi-arv" id="det-arv"><h3>🌳 Árvore genealógica</h3>
+      <div id="arv-wrap"></div></div>
     ${fatos ? `<details class="fi-det"><summary>◆ Calculado</summary>${fatos.replace(/<h2>[\s\S]*?<\/h2>/, '')}</details>` : ''}
     ${cruz ? `<details class="fi-det"><summary>🔍 Cruzamentos</summary>${cruz.replace(/<h2>[\s\S]*?<\/h2>/, '')}</details>` : ''}
     <div class="mut small" style="margin-top:14px;text-align:center">ficha ${esc(p.id)}</div>`;
   app._R = R; app._p = p; app._F = F;
-  const det = $('#det-arv'); det.addEventListener('toggle', () => { if (det.open) desenharArvore(); });
-  window.onresize = () => { if (location.hash === '#/p/' + id && det.open) linhas(); };
+  // árvore completa (v1.2): todo mundo ligado, aberta direto na ficha — arrastar, pinça, tela cheia e lista
+  arvDesenhar(p.id, $('#arv-wrap'));
+  window.onresize = null;
 }
 vPessoa = (orig => function (id) { return celular() ? vPessoaCel(id) : orig(id); })(vPessoa);
 

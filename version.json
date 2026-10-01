@@ -1,5 +1,5 @@
 {
- "version": "1.1",
- "date": "2026-09-28",
- "notes": "Feito pro celular: aniversários em quadradinhos (3 por linha), cadastro expresso com \"completar depois\", fila Completar, ficha e lista enxutas; sem Descobertas e Mapa."
+ "version": "1.2",
+ "date": "2026-10-01",
+ "notes": "Árvore completa: todo mundo ligado por pai/mãe (primos de qualquer grau, tios-avós, irmãos dos avós…), com o que cada um é da ficha aberta; arrastar, pinça, tela cheia e lista por grau de parentesco."
 }
